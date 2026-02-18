@@ -6,7 +6,7 @@ A .NET 10 library for building headless sites with Optimizely CMS (SaaS). Combin
 
 - **Type Builder** -- Define CMS content types as .NET POCOs with attributes. Types are automatically synced to Optimizely CMS on startup via REST API (create/update only, never deletes).
 - **Content Client** -- Query content from Optimizely Graph (GraphQL). Auto-generates queries from registered types, supports fluent query building with filters, search with facets and pagination.
-- **MVC Integration** -- Content routing, tag helpers (`<graph-image>`, `<graph-link>`, `<graph-richtext>`, `<graph-content-area>`), view components for composition rendering, and CMS preview support.
+- **MVC Integration** -- Content routing, tag helpers (`<graph-image>`, `<graph-link>`, `<graph-rich-text>`, `<graph-content-area>`), view components for composition rendering, and CMS preview support.
 
 ## Quick Start
 
@@ -46,17 +46,19 @@ builder.Services.AddOptimizelyGraph(builder.Configuration);
 ### 4. Define Content Types
 
 ```csharp
+using CodeArt.Optimizely.HeadlessKit.Core.Models;
 using CodeArt.Optimizely.HeadlessKit.TypeBuilder.Annotation;
 using CodeArt.Optimizely.HeadlessKit.TypeBuilder.Models;
 
-[ContentType("heroElement", BaseTypes.Element)]
-public class HeroElement : ComponentBase
+[ContentType("HeroElement", BaseTypes.Element)]
+public class HeroElement : GraphBlock
 {
-    [CMSProperty(DisplayName = "Title", Format = PropertyFormats.ShortString)]
-    public string? Title { get; set; }
+    [CultureSpecific]
+    [CMSProperty(Format = PropertyFormats.ShortString)]
+    public string Title { get; set; }
 
-    [CMSProperty(DisplayName = "Image", Format = PropertyFormats.ContentReference)]
-    public GraphContentReference? Image { get; set; }
+    public GraphContentReference BackgroundImage { get; set; }
+    public GraphContentUrl ButtonLink { get; set; }
 }
 ```
 
@@ -65,16 +67,15 @@ public class HeroElement : ComponentBase
 Content is queried automatically via content routing, or manually:
 
 ```csharp
-// Via the content repository
-var content = await contentRepository.GetByPath<MyPage>("/en/my-page");
+// Via the content repository (cached)
+var page = await contentRepository.GetContentByPath<StandardPage>("/en/about");
 
 // Via the fluent query builder
-var results = await graphQueryBuilder
-    .ForType<ArticlePage>()
-    .Where(x => x.Title, "contains", "news")
-    .OrderBy("_metadata/published", descending: true)
+var articles = await GraphQuery.For<ArticlePage>(client)
+    .Where(f => f.Metadata.Status.Eq("Published"))
+    .OrderBy(a => a.MetaData.Published, OrderDirection.DESC)
     .Take(10)
-    .ExecuteAsync();
+    .ToListAsync();
 ```
 
 ### 6. Render with Tag Helpers
@@ -82,15 +83,17 @@ var results = await graphQueryBuilder
 ```html
 @addTagHelper *, CodeArt.Optimizely.HeadlessKit
 
-<graph-image content="@Model.Image" width="800" class="hero-img" />
-<graph-link content="@Model.Link">Click here</graph-link>
-<graph-richtext content="@Model.Body" />
-<graph-content-area composition="@Model.Composition" />
+<graph-image content="@Model.Image" width="800" alt="Hero" css-class="hero-img" />
+<graph-link content="@Model.Link" css-class="btn">Click here</graph-link>
+<graph-rich-text content="@Model.Body" />
+<graph-content-area composition="@Model.CurrentContent?.Composition" />
 ```
 
 ## Sample Site
 
 See `samples/HeadlessKit.Sample.RazorPages/` for a full working example with 26 element types, 4 page types, display templates, and Razor Pages rendering.
+
+A **content package** is included at `samples/HeadlessKit.Sample.RazorPages/ContentPackage/` -- import it into your CMS to get sample pages and elements that work with the sample site out of the box.
 
 To run:
 
@@ -99,6 +102,19 @@ dotnet run --project samples/HeadlessKit.Sample.RazorPages/HeadlessKit.Sample.Ra
 ```
 
 > **Note:** You need valid Optimizely CMS SaaS credentials configured via user secrets or `appsettings.json`.
+
+## Documentation
+
+- [Getting Started](docs/getting-started.md) -- Full setup guide
+- [Content Types](docs/content-types.md) -- Attribute reference and type sync
+- [Display Templates](docs/display-templates.md) -- Editor display settings
+- [Content Querying](docs/content-querying.md) -- Fluent queries, filters, search
+- [MVC Integration](docs/mvc-integration.md) -- Routing, tag helpers, view components, preview
+
+### AI Assistant Instructions
+
+- [Using HeadlessKit](docs/ai-instructions/using-headlesskit.md) -- For AI coding assistants helping developers
+- [Optimizely SaaS API](docs/ai-instructions/optimizely-saas-content-api.md) -- For AI assistants calling CMS APIs directly
 
 ## Building
 
