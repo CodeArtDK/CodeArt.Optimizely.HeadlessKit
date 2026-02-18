@@ -182,7 +182,18 @@ Add to `Pages/_ViewImports.cshtml`:
 @addTagHelper *, CodeArt.Optimizely.HeadlessKit
 ```
 
-## 7. Run
+## 7. Import Sample Content (Optional)
+
+To see the sample site in action with real content, import the included content package:
+
+1. Run the site once to sync content types to your CMS (the TypeBuilder does this on startup)
+2. In your Optimizely CMS, go to **Settings** > **Import Data**
+3. Upload `meridiandigital.episerverdata` from `samples/HeadlessKit.Sample.RazorPages/ContentPackage/`
+4. Wait a few minutes for the content to appear in Optimizely Graph
+
+See the [ContentPackage README](../samples/HeadlessKit.Sample.RazorPages/ContentPackage/README.md) for details.
+
+## 8. Run
 
 ```bash
 dotnet run
