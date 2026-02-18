@@ -1,0 +1,8 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.EditorialElement
+
+<div class="opti-editorial">
+    @if (Model.Body?.Html != null)
+    {
+        @Html.Raw(Model.Body.Html)
+    }
+</div>

@@ -1,0 +1,19 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.HeroElement
+
+<section class="opti-hero">
+    @if (Model.BackgroundImage?.Url?.Default != null)
+    {
+        <img src="@Model.BackgroundImage.Url.Default" alt="" class="opti-hero__bg" />
+    }
+    <div class="opti-hero__content">
+        <h1 class="opti-hero__title">@Model.Title</h1>
+        @if (!string.IsNullOrEmpty(Model.Subtitle))
+        {
+            <p class="opti-hero__subtitle">@Model.Subtitle</p>
+        }
+        @if (!string.IsNullOrEmpty(Model.ButtonText) && Model.ButtonLink?.Default != null)
+        {
+            <a href="@Model.ButtonLink.Default" class="opti-hero__cta">@Model.ButtonText</a>
+        }
+    </div>
+</section>

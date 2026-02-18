@@ -1,0 +1,16 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.TestimonialElement
+
+<blockquote class="opti-testimonial">
+    <p class="opti-testimonial__quote">@Model.Quote</p>
+    <footer class="opti-testimonial__footer">
+        <cite class="opti-testimonial__author">@Model.AuthorName</cite>
+        @if (!string.IsNullOrEmpty(Model.AuthorTitle))
+        {
+            <span class="opti-testimonial__title">@Model.AuthorTitle</span>
+        }
+        @if (!string.IsNullOrEmpty(Model.CompanyName))
+        {
+            <span class="opti-testimonial__company">@Model.CompanyName</span>
+        }
+    </footer>
+</blockquote>

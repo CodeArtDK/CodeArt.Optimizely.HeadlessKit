@@ -1,0 +1,24 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.CallToActionElement
+
+<section class="opti-cta">
+    @if (Model.BackgroundImage?.Url?.Default != null)
+    {
+        <img src="@Model.BackgroundImage.Url.Default" alt="" class="opti-cta__bg" />
+    }
+    <div class="opti-cta__content">
+        @if (!string.IsNullOrEmpty(Model.Title))
+        {
+            <h2 class="opti-cta__title">@Model.Title</h2>
+        }
+        @if (Model.Body?.Html != null)
+        {
+            <div class="opti-cta__body">
+                @Html.Raw(Model.Body.Html)
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.ButtonText) && Model.ButtonLink?.Default != null)
+        {
+            <a href="@Model.ButtonLink.Default" class="opti-cta__button">@Model.ButtonText</a>
+        }
+    </div>
+</section>

@@ -1,0 +1,101 @@
+@page "/search"
+@model HeadlessKit.Sample.RazorPages.Pages.SearchModel
+@{
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.Query) ? "Search" : $"Search: {Model.Query}";
+}
+
+<div class="search-header">
+    <div class="container">
+        <h1>Search</h1>
+        <form class="search-form" action="/search" method="get" role="search">
+            <div class="input-group input-group-lg">
+                <input type="search" name="q" class="form-control" placeholder="Search pages..."
+                       value="@Model.Query" aria-label="Search" autofocus />
+                <button class="btn btn-accent" type="submit"><i class="bi bi-search me-1"></i> Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container py-5">
+    @if (string.IsNullOrWhiteSpace(Model.Query))
+    {
+        <div class="search-empty text-center py-5">
+            <i class="bi bi-search search-empty__icon"></i>
+            <p class="search-empty__text">Enter a search term to find content.</p>
+        </div>
+    }
+    else if (Model.Results.Count == 0)
+    {
+        <div class="search-empty text-center py-5">
+            <i class="bi bi-emoji-frown search-empty__icon"></i>
+            <p class="search-empty__text">No results found for "<strong>@Model.Query</strong>".</p>
+            <p class="text-muted">Try different keywords or check your spelling.</p>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted mb-4">Found <strong>@Model.Total</strong> result@(Model.Total != 1 ? "s" : "") for "<strong>@Model.Query</strong>"</p>
+
+        <div class="search-results">
+            @foreach (var item in Model.Results)
+            {
+                var title = !string.IsNullOrEmpty(item.Title) ? item.Title
+                          : !string.IsNullOrEmpty(item.MetaTitle) ? item.MetaTitle
+                          : item.MetaData?.DisplayName ?? "Untitled";
+                var url = item.MetaData?.Url?.Default;
+                var contentType = item.MetaData?.Types?.FirstOrDefault(t => !t.StartsWith("_"));
+
+                <article class="opti-article-card search-result-card">
+                    @if (item.FeaturedImage?.Url?.Default != null)
+                    {
+                        <img src="@item.FeaturedImage.Url.Default" alt="@title" class="opti-article-card__image" />
+                    }
+                    <div class="opti-article-card__body">
+                        <div class="opti-article-card__meta">
+                            @if (item.MetaData?.Published != null)
+                            {
+                                <time datetime="@item.MetaData.Published.Value.ToString("yyyy-MM-dd")">@item.MetaData.Published.Value.ToString("MMM dd, yyyy")</time>
+                            }
+                            @if (!string.IsNullOrEmpty(contentType))
+                            {
+                                <span class="opti-article-card__tag">@contentType</span>
+                            }
+                            @if (!string.IsNullOrEmpty(item.AuthorName))
+                            {
+                                <span class="opti-article-card__author">@item.AuthorName</span>
+                            }
+                        </div>
+                        <h3 class="opti-article-card__title">
+                            @if (url != null)
+                            {
+                                <a href="@url">@title</a>
+                            }
+                            else
+                            {
+                                @title
+                            }
+                        </h3>
+                        @if (!string.IsNullOrEmpty(item.Excerpt))
+                        {
+                            <p class="opti-article-card__excerpt">@item.Excerpt</p>
+                        }
+                        else if (!string.IsNullOrEmpty(item.MetaDescription))
+                        {
+                            <p class="opti-article-card__excerpt">@item.MetaDescription</p>
+                        }
+                        @if (item.Tags?.Any() == true)
+                        {
+                            <div class="opti-article-card__tags">
+                                @foreach (var tag in item.Tags)
+                                {
+                                    <span class="opti-article-card__tag">@tag</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</div>

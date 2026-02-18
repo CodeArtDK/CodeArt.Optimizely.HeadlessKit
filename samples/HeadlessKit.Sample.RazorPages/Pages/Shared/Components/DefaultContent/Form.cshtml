@@ -1,0 +1,16 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.FormElement
+
+<div class="opti-form">
+    @if (!string.IsNullOrEmpty(Model.Title))
+    {
+        <h3 class="opti-form__title">@Model.Title</h3>
+    }
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <p class="opti-form__description">@Model.Description</p>
+    }
+    @if (!string.IsNullOrEmpty(Model.FormId))
+    {
+        <div class="opti-form__container" data-form-id="@Model.FormId"></div>
+    }
+</div>

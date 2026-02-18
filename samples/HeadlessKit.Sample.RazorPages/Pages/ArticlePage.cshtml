@@ -1,0 +1,58 @@
+@page
+@model ArticlePageModel
+@{
+    ViewData["Title"] = Model.CurrentContent?.MetaTitle ?? Model.CurrentContent?.Title;
+}
+
+@if (Model.CurrentContent != null)
+{
+    <article class="opti-article">
+        <header class="opti-article__header">
+            @if (Model.CurrentContent.FeaturedImage?.Url?.Default != null)
+            {
+                <img src="@Model.CurrentContent.FeaturedImage.Url.Default" alt="@Model.CurrentContent.Title" class="opti-article__featured-image" />
+            }
+            <h1 class="opti-article__title">@Model.CurrentContent.Title</h1>
+            <div class="opti-article__meta">
+                @if (Model.CurrentContent.PublishedDate != default)
+                {
+                    <time datetime="@Model.CurrentContent.PublishedDate.ToString("yyyy-MM-dd")">
+                        @Model.CurrentContent.PublishedDate.ToString("MMMM dd, yyyy")
+                    </time>
+                }
+                @if (!string.IsNullOrEmpty(Model.CurrentContent.AuthorName))
+                {
+                    <span class="opti-article__author">
+                        @if (Model.CurrentContent.AuthorPhoto?.Url?.Default != null)
+                        {
+                            <img src="@Model.CurrentContent.AuthorPhoto.Url.Default" alt="@Model.CurrentContent.AuthorName" class="opti-article__author-photo" />
+                        }
+                        <span>@Model.CurrentContent.AuthorName</span>
+                        @if (!string.IsNullOrEmpty(Model.CurrentContent.AuthorRole))
+                        {
+                            <span class="opti-article__author-role">@Model.CurrentContent.AuthorRole</span>
+                        }
+                    </span>
+                }
+            </div>
+            @if (Model.CurrentContent.Tags?.Any() == true)
+            {
+                <div class="opti-article__tags">
+                    @foreach (var tag in Model.CurrentContent.Tags)
+                    {
+                        <span class="opti-tag">@tag</span>
+                    }
+                </div>
+            }
+        </header>
+
+        @if (Model.CurrentContent.Body?.Html != null)
+        {
+            <div class="opti-article__body">
+                @Html.Raw(Model.CurrentContent.Body.Html)
+            </div>
+        }
+    </article>
+
+    <graph-content-area composition="@Model.CurrentContent.Composition" />
+}

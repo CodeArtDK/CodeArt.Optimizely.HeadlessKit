@@ -1,0 +1,32 @@
+@using CodeArt.Optimizely.HeadlessKit.Core.Models.Composition
+@model ContentComposition
+
+@{
+    var nodeType = ViewBag.NodeType as string;
+    var cssClasses = ViewBag.CssClasses as string ?? string.Empty;
+    var dataAttributes = ViewBag.DataAttributes as IDictionary<string, string> ?? new Dictionary<string, string>();
+    var dataAttrsHtml = string.Join(" ", dataAttributes.Select(kv => $"data-{kv.Key}=\"{kv.Value}\""));
+    var hasRootSettings = !string.IsNullOrWhiteSpace(nodeType);
+}
+
+@if (Model?.Nodes != null)
+{
+    if (hasRootSettings)
+    {
+        <div class="opti-@(nodeType?.ToLowerInvariant()) @cssClasses"
+             data-display-template="@Model.DisplayTemplateKey"
+             @Html.Raw(dataAttrsHtml)>
+            @foreach (var node in Model.Nodes)
+            {
+                @await Component.InvokeAsync("CompositionNode", new { node })
+            }
+        </div>
+    }
+    else
+    {
+        foreach (var node in Model.Nodes)
+        {
+            @await Component.InvokeAsync("CompositionNode", new { node })
+        }
+    }
+}

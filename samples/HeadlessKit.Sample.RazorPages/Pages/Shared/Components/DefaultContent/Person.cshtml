@@ -1,0 +1,29 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.PersonElement
+
+<div class="opti-person">
+    @if (Model.Photo?.Url?.Default != null)
+    {
+        <img src="@Model.Photo.Url.Default" alt="@Model.Name" class="opti-person__photo" />
+    }
+    <div class="opti-person__info">
+        <h3 class="opti-person__name">@Model.Name</h3>
+        @if (!string.IsNullOrEmpty(Model.Role))
+        {
+            <p class="opti-person__role">@Model.Role</p>
+        }
+        @if (!string.IsNullOrEmpty(Model.Bio))
+        {
+            <p class="opti-person__bio">@Model.Bio</p>
+        }
+        <div class="opti-person__social">
+            @if (!string.IsNullOrEmpty(Model.TwitterHandle))
+            {
+                <a href="https://twitter.com/@Model.TwitterHandle" class="opti-person__social-link" target="_blank" rel="noopener">Twitter</a>
+            }
+            @if (!string.IsNullOrEmpty(Model.LinkedInUrl))
+            {
+                <a href="@Model.LinkedInUrl" class="opti-person__social-link" target="_blank" rel="noopener">LinkedIn</a>
+            }
+        </div>
+    </div>
+</div>

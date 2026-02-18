@@ -1,0 +1,14 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.QuoteElement
+
+<blockquote class="opti-quote">
+    @if (Model.QuoteBody?.Html != null)
+    {
+        <div class="opti-quote__text">
+            @Html.Raw(Model.QuoteBody.Html)
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.Attribution))
+    {
+        <footer class="opti-quote__attribution">&mdash; @Model.Attribution</footer>
+    }
+</blockquote>

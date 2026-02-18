@@ -1,0 +1,10 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.ButtonElement
+
+@if (Model.Link?.Default != null)
+{
+    <a href="@Model.Link.Default" class="opti-button opti-button--@(Model.Style ?? "default")">@Model.Text</a>
+}
+else
+{
+    <span class="opti-button opti-button--@(Model.Style ?? "default")">@Model.Text</span>
+}

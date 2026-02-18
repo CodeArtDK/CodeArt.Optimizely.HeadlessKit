@@ -1,0 +1,15 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.TeaserElement
+
+<div class="opti-teaser">
+    @if (Model.Image?.Url?.Default != null)
+    {
+        <img src="@Model.Image.Url.Default" alt="@Model.Heading" class="opti-teaser__image" />
+    }
+    <div class="opti-teaser__content">
+        <h3 class="opti-teaser__heading">@Model.Heading</h3>
+        @if (Model.Link?.Default != null)
+        {
+            <a href="@Model.Link.Default" class="opti-teaser__link">Read more</a>
+        }
+    </div>
+</div>

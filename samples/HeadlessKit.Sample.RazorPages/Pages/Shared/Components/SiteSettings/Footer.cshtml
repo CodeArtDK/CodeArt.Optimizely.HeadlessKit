@@ -1,0 +1,45 @@
+@model HeadlessKit.Sample.RazorPages.Models.Experiences.LandingPage
+
+@{
+    var siteName = Model?.SiteName ?? "Meridian Digital";
+    var siteDescription = Model?.SiteDescription ?? "Empowering businesses through digital transformation, cloud innovation, and strategic technology consulting.";
+    var footerEmail = Model?.FooterEmail ?? "info@meridiandigital.com";
+    var footerPhone = Model?.FooterPhone ?? "+1 (555) 234-5678";
+    var twitterUrl = Model?.TwitterUrl ?? "#";
+    var linkedInUrl = Model?.LinkedInUrl ?? "#";
+    var gitHubUrl = Model?.GitHubUrl ?? "#";
+    var copyrightText = Model?.CopyrightText ?? $"&copy; {DateTime.Now.Year} Meridian Digital. All rights reserved.";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <h5 class="footer-brand"><i class="bi bi-diamond-fill me-2"></i>@siteName</h5>
+            <p class="text-light-muted">@siteDescription</p>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+            <h6 class="footer-heading">Connect</h6>
+            <div class="footer-social">
+                <a href="@twitterUrl" aria-label="Twitter" target="_blank" rel="noopener"><i class="bi bi-twitter"></i></a>
+                <a href="@linkedInUrl" aria-label="LinkedIn" target="_blank" rel="noopener"><i class="bi bi-linkedin"></i></a>
+                <a href="@gitHubUrl" aria-label="GitHub" target="_blank" rel="noopener"><i class="bi bi-github"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <h6 class="footer-heading">Info</h6>
+            <p class="text-light-muted small">
+                <i class="bi bi-envelope me-1"></i> @footerEmail<br />
+                <i class="bi bi-telephone me-1"></i> @footerPhone
+            </p>
+        </div>
+    </div>
+    <hr class="footer-divider" />
+    <div class="row">
+        <div class="col-md-6">
+            <p class="small text-light-muted mb-0">@Html.Raw(copyrightText)</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <a asp-page="/Privacy" class="small text-light-muted">Privacy Policy</a>
+        </div>
+    </div>
+</div>

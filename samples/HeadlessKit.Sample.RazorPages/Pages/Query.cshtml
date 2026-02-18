@@ -1,0 +1,12 @@
+@page "/query"
+@model HeadlessKit.Sample.RazorPages.Pages.QueryModel
+@{
+    ViewData["Title"] = "Graph Query Builder Demo";
+}
+
+<div class="container mt-4">
+    <h1>Graph Query Builder Demo</h1>
+    <p class="lead">Generated GraphQL queries from POCO models using the fluent query builder API.</p>
+
+    <pre class="bg-dark text-light p-4 rounded" style="white-space: pre-wrap; font-size: 0.85rem;">@Model.GeneratedQuery</pre>
+</div>

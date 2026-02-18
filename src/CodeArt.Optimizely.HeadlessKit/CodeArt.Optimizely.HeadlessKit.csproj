@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <IsPackable>true</IsPackable>
+
+    <PackageId>CodeArt.Optimizely.HeadlessKit</PackageId>
+    <Description>A .NET library for building headless Optimizely CMS sites — includes SaaS CMS type builder, GraphQL content client, and ASP.NET Core MVC integration.</Description>
+    <PackageTags>optimizely;cms;headless;graph;graphql;saas</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="CodeArt.Optimizely.HeadlessKit.Tests" />
+  </ItemGroup>
+
+<ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+<PackageReference Include="GraphQL.Client" Version="6.1.0" />
+    <PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" Version="6.1.0" />
+    <PackageReference Include="IdentityModel.AspNetCore" Version="4.3.0" />
+    <!-- Pin transitive deps from IdentityModel.AspNetCore to fix GHSA-59j7-ghrg-fj52 -->
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.7.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.7.1" />
+  </ItemGroup>
+
+</Project>

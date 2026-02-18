@@ -1,0 +1,7 @@
+@page
+@model StandardPageModel
+@{
+    ViewData["Title"] = Model.CurrentContent?.MetaTitle;
+}
+
+<graph-content-area composition="@Model.CurrentContent?.Composition" />

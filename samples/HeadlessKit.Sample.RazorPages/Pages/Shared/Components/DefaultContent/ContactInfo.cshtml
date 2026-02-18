@@ -1,0 +1,31 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.ContactInfoElement
+
+<div class="opti-contact-info">
+    @if (!string.IsNullOrEmpty(Model.Address))
+    {
+        <div class="opti-contact-info__item">
+            <strong class="opti-contact-info__label">Address</strong>
+            <span>@Model.Address</span>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.Phone))
+    {
+        <div class="opti-contact-info__item">
+            <strong class="opti-contact-info__label">Phone</strong>
+            <a href="tel:@Model.Phone">@Model.Phone</a>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.Email))
+    {
+        <div class="opti-contact-info__item">
+            <strong class="opti-contact-info__label">Email</strong>
+            <a href="mailto:@Model.Email">@Model.Email</a>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.MapEmbedUrl))
+    {
+        <div class="opti-contact-info__map">
+            <iframe src="@Model.MapEmbedUrl" title="Map" loading="lazy"></iframe>
+        </div>
+    }
+</div>

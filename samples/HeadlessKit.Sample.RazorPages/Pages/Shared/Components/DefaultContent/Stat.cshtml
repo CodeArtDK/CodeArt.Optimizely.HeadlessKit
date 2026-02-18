@@ -1,0 +1,10 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.StatElement
+
+<div class="opti-stat">
+    @if (!string.IsNullOrEmpty(Model.IconClass))
+    {
+        <i class="@Model.IconClass opti-stat__icon"></i>
+    }
+    <span class="opti-stat__value">@Model.Value</span>
+    <span class="opti-stat__label">@Model.Label</span>
+</div>

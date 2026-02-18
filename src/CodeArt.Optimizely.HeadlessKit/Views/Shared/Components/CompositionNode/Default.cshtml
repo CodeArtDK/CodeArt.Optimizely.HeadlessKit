@@ -1,0 +1,36 @@
+@using CodeArt.Optimizely.HeadlessKit.Core.Models.Composition
+@using CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure
+@model ICompositionNode
+
+@{
+    var cssClasses = ViewBag.CssClasses as string ?? string.Empty;
+    var dataAttributes = ViewBag.DataAttributes as IDictionary<string, string> ?? new Dictionary<string, string>();
+    var dataAttrsHtml = string.Join(" ", dataAttributes.Select(kv => $"data-{kv.Key}=\"{kv.Value}\""));
+}
+
+@if (Model is CompositionStructureNode structureNode)
+{
+    <div class="opti-@(structureNode.NodeType?.ToLowerInvariant()) @cssClasses"
+         data-node-type="@structureNode.NodeType"
+         data-display-template="@structureNode.DisplayTemplateKey"
+         @Html.Raw(dataAttrsHtml)>
+        @if (structureNode.Nodes != null)
+        {
+            foreach (var childNode in structureNode.Nodes)
+            {
+                @await Component.InvokeAsync("CompositionNode", new { node = childNode })
+            }
+        }
+    </div>
+}
+else if (Model is CompositionComponentNode componentNode)
+{
+    <div class="opti-component @cssClasses"
+         data-display-template="@componentNode.DisplayTemplateKey"
+         @Html.Raw(dataAttrsHtml)>
+        @if (componentNode.Component != null)
+        {
+            @await Component.InvokeGraphContentComponentAsync(componentNode)
+        }
+    </div>
+}

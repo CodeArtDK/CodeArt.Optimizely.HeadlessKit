@@ -1,0 +1,24 @@
+@model HeadlessKit.Sample.RazorPages.Models.Elements.BannerElement
+
+<section class="opti-banner">
+    @if (Model.Image?.Url?.Default != null)
+    {
+        <img src="@Model.Image.Url.Default" alt="" class="opti-banner__bg" />
+    }
+    <div class="opti-banner__content">
+        @if (!string.IsNullOrEmpty(Model.Heading))
+        {
+            <h2 class="opti-banner__heading">@Model.Heading</h2>
+        }
+        @if (Model.Body?.Html != null)
+        {
+            <div class="opti-banner__body">
+                @Html.Raw(Model.Body.Html)
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.LinkText) && Model.Link?.Default != null)
+        {
+            <a href="@Model.Link.Default" class="opti-banner__cta">@Model.LinkText</a>
+        }
+    </div>
+</section>
