@@ -1,0 +1,18 @@
+@model HeadlessKit.Sample.Mvc.Models.Experiences.LandingPage
+
+@{
+    var siteName = Model?.SiteName ?? "Meridian Digital";
+    var logoUrl = Model?.SiteLogo?.Url?.Default;
+}
+
+<a class="navbar-brand fw-bold" href="/">
+    @if (!string.IsNullOrEmpty(logoUrl))
+    {
+        <img src="@logoUrl" alt="@siteName" height="32" class="me-2" />
+    }
+    else
+    {
+        <i class="bi bi-diamond-fill me-2"></i>
+    }
+    @siteName
+</a>

@@ -89,16 +89,27 @@ var articles = await GraphQuery.For<ArticlePage>(client)
 <graph-content-area composition="@Model.CurrentContent?.Composition" />
 ```
 
-## Sample Site
+## Sample Sites
 
-See `samples/HeadlessKit.Sample.RazorPages/` for a full working example with 26 element types, 4 page types, display templates, and Razor Pages rendering.
+Two complete sample sites are included, both with 26 element types, 4 page types, and display templates:
 
-A **content package** is included at `samples/HeadlessKit.Sample.RazorPages/ContentPackage/` -- import it into your CMS to get sample pages and elements that work with the sample site out of the box.
+| Sample | Approach | Path |
+|--------|----------|------|
+| **Razor Pages** | `ContentPage<T>` base class, `MapDynamicPageRoute` | `samples/HeadlessKit.Sample.RazorPages/` |
+| **MVC** | `ContentControllerBase<T>` base class, `MapContentControllerRoute` | `samples/HeadlessKit.Sample.Mvc/` |
+
+Both sites share the same content types, element models, display templates, look & feel, and CSS. They differ only in the rendering approach (Razor Pages vs MVC Controllers).
+
+A **content package** is included at `samples/HeadlessKit.Sample.RazorPages/ContentPackage/` -- import it into your CMS to get sample pages and elements that work with both sample sites out of the box.
 
 To run:
 
 ```bash
+# Razor Pages sample
 dotnet run --project samples/HeadlessKit.Sample.RazorPages/HeadlessKit.Sample.RazorPages.csproj
+
+# MVC sample
+dotnet run --project samples/HeadlessKit.Sample.Mvc/HeadlessKit.Sample.Mvc.csproj
 ```
 
 > **Note:** You need valid Optimizely CMS SaaS credentials configured via user secrets or `appsettings.json`.

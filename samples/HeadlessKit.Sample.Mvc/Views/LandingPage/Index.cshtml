@@ -1,0 +1,6 @@
+@model LandingPage
+@{
+    ViewData["Title"] = Model?.MetaData?.DisplayName;
+}
+
+<graph-content-area composition="@Model?.Composition" />

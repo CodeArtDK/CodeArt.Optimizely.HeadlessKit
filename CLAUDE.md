@@ -21,6 +21,9 @@ dotnet test test/CodeArt.Optimizely.HeadlessKit.Tests/CodeArt.Optimizely.Headles
 # Run the sample site (Razor Pages)
 dotnet run --project samples/HeadlessKit.Sample.RazorPages/HeadlessKit.Sample.RazorPages.csproj
 
+# Run the sample site (MVC)
+dotnet run --project samples/HeadlessKit.Sample.Mvc/HeadlessKit.Sample.Mvc.csproj
+
 # Create NuGet package
 dotnet pack src/CodeArt.Optimizely.HeadlessKit/CodeArt.Optimizely.HeadlessKit.csproj
 ```
@@ -51,6 +54,7 @@ src/CodeArt.Optimizely.HeadlessKit/       <- single merged library (NuGet packag
     └── Infrastructure/                     <- content routing, model binding, preview middleware
 
 samples/HeadlessKit.Sample.RazorPages/    <- demo Razor Pages site
+samples/HeadlessKit.Sample.Mvc/           <- demo MVC site
 test/CodeArt.Optimizely.HeadlessKit.Tests/ <- xUnit tests
 ```
 

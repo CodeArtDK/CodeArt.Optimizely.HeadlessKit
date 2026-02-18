@@ -1,0 +1,11 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.AccordionElement
+
+<details class="opti-accordion">
+    <summary class="opti-accordion__heading">@Model.Heading</summary>
+    <div class="opti-accordion__body">
+        @if (Model.Body?.Html != null)
+        {
+            @Html.Raw(Model.Body.Html)
+        }
+    </div>
+</details>

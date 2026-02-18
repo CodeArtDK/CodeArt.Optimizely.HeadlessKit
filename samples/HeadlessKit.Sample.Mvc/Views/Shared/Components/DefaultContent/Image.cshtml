@@ -1,0 +1,12 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.ImageElement
+
+<figure class="opti-image">
+    @if (Model.Image?.Url?.Default != null)
+    {
+        <img src="@Model.Image.Url.Default" alt="@(Model.AltText ?? Model.Caption)" class="opti-image__img" />
+    }
+    @if (!string.IsNullOrEmpty(Model.Caption))
+    {
+        <figcaption class="opti-image__caption">@Model.Caption</figcaption>
+    }
+</figure>

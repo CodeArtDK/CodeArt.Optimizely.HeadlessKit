@@ -1,0 +1,26 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.PricingElement
+
+<div class="opti-pricing @(Model.Highlighted ? "opti-pricing--highlighted" : "")">
+    @if (!string.IsNullOrEmpty(Model.Title))
+    {
+        <h3 class="opti-pricing__title">@Model.Title</h3>
+    }
+    @if (!string.IsNullOrEmpty(Model.Price))
+    {
+        <div class="opti-pricing__price">@Model.Price</div>
+    }
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <p class="opti-pricing__description">@Model.Description</p>
+    }
+    @if (Model.Features?.Html != null)
+    {
+        <div class="opti-pricing__features">
+            @Html.Raw(Model.Features.Html)
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.ButtonText) && Model.ButtonLink?.Default != null)
+    {
+        <a href="@Model.ButtonLink.Default" class="opti-pricing__cta">@Model.ButtonText</a>
+    }
+</div>

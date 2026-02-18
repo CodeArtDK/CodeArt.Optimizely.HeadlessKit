@@ -39,7 +39,7 @@ dotnet add package CodeArt.Optimizely.HeadlessKit
 }
 ```
 
-### Program.cs
+### Program.cs (Razor Pages)
 
 ```csharp
 using CodeArt.Optimizely.HeadlessKit.Mvc;
@@ -62,6 +62,36 @@ app.UseAuthorization();
 
 app.MapDynamicPageRoute<ContentRouteTransformer>("{**path}");
 app.MapRazorPages();
+
+await app.InitializeServicesAsync();  // Must be after routing setup
+
+app.Run();
+```
+
+### Program.cs (MVC Controllers)
+
+```csharp
+using CodeArt.Optimizely.HeadlessKit.Mvc;
+using CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure;
+using CodeArt.Optimizely.HeadlessKit.TypeBuilder;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddSaaSCMSTypeBuilder(builder.Configuration);
+builder.Services.AddOptimizelyGraph(builder.Configuration);
+
+var app = builder.Build();
+
+app.UseCmsPreview();  // Must be before UseRouting
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization();
+
+app.MapControllerRoute(name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapContentControllerRoute();
 
 await app.InitializeServicesAsync();  // Must be after routing setup
 
@@ -178,12 +208,36 @@ public class StandardPageModel : ContentPage<StandardPage> { }
 
 ### MVC Controller Template
 
+For minimal content controllers, the base class handles everything -- just declare the class:
+
+```csharp
+// Controllers/StandardPageController.cs
+using CodeArt.Optimizely.HeadlessKit.Mvc.Attributes;
+using CodeArt.Optimizely.HeadlessKit.Mvc.Controllers;
+
+[TemplateDescriptor(typeof(StandardPage))]
+public class StandardPageController : ContentControllerBase<StandardPage> { }
+```
+
+```html
+<!-- Views/StandardPage/Index.cshtml -->
+@model StandardPage
+@{
+    ViewData["Title"] = Model?.MetaTitle;
+}
+
+<graph-content-area composition="@Model?.Composition" />
+```
+
+Override `Index` when custom logic is needed:
+
 ```csharp
 [TemplateDescriptor(typeof(ArticlePage))]
-public class ArticleController : ContentControllerBase<ArticlePage>
+public class ArticlePageController : ContentControllerBase<ArticlePage>
 {
     public override async Task<IActionResult> Index(ArticlePage CurrentContent)
     {
+        // Custom logic...
         return View(CurrentContent);
     }
 }
@@ -360,6 +414,15 @@ public class SectionDisplayTemplate : SaaSDisplayTemplate
 }
 ```
 
+## Sample Sites
+
+Two complete sample sites are included in the repository:
+
+- **`samples/HeadlessKit.Sample.RazorPages/`** -- Razor Pages approach using `ContentPage<T>` and `MapDynamicPageRoute`
+- **`samples/HeadlessKit.Sample.Mvc/`** -- MVC Controllers approach using `ContentControllerBase<T>` and `MapContentControllerRoute`
+
+Both sites use identical content types, element models, display templates, and CSS. They differ only in the rendering approach. Use these as reference implementations when building new sites.
+
 ## Common Mistakes to Avoid
 
 1. **Missing `@addTagHelper *, CodeArt.Optimizely.HeadlessKit`** in `_ViewImports.cshtml` -- tag helpers won't work
@@ -370,3 +433,4 @@ public class SectionDisplayTemplate : SaaSDisplayTemplate
 6. **Missing `[JsonIgnore]` on display template setting properties** -- properties get serialized to API
 7. **Forgetting `MayContainTypes`** on experience pages -- no elements allowed in Visual Builder
 8. **Not setting `Format = PropertyFormats.ShortString`** for short text -- defaults to long text editor
+9. **Using `MapDynamicPageRoute` with MVC Controllers** -- use `MapContentControllerRoute` instead

@@ -1,6 +1,6 @@
 # MVC Integration
 
-HeadlessKit provides ASP.NET Core integration for content routing, rendering, and CMS preview support.
+HeadlessKit provides ASP.NET Core integration for content routing, rendering, and CMS preview support. Both Razor Pages and MVC Controllers are fully supported -- see the sample sites at `samples/HeadlessKit.Sample.RazorPages/` and `samples/HeadlessKit.Sample.Mvc/` for complete working examples of each approach.
 
 ## Content Routing
 
@@ -15,7 +15,7 @@ The `ContentRouteTransformer` intercepts requests via a catch-all dynamic route,
 app.MapDynamicPageRoute<ContentRouteTransformer>("{**path}");
 
 // Or for MVC Controllers:
-app.MapDynamicControllerRoute<ContentRouteTransformer>("{**path}");
+app.MapContentControllerRoute();
 
 // Initialize template scanning
 await app.InitializeServicesAsync();

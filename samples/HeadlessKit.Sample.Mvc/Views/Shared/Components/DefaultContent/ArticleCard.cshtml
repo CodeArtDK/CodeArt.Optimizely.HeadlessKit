@@ -1,0 +1,43 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.ArticleCardElement
+
+<article class="opti-article-card">
+    @if (Model.Image?.Url?.Default != null)
+    {
+        <img src="@Model.Image.Url.Default" alt="@Model.Title" class="opti-article-card__image" />
+    }
+    <div class="opti-article-card__body">
+        <div class="opti-article-card__meta">
+            @if (Model.Date != default)
+            {
+                <time datetime="@Model.Date.ToString("yyyy-MM-dd")">@Model.Date.ToString("MMM dd, yyyy")</time>
+            }
+            @if (!string.IsNullOrEmpty(Model.AuthorName))
+            {
+                <span class="opti-article-card__author">@Model.AuthorName</span>
+            }
+        </div>
+        <h3 class="opti-article-card__title">
+            @if (Model.Link?.Default != null)
+            {
+                <a href="@Model.Link.Default">@Model.Title</a>
+            }
+            else
+            {
+                @Model.Title
+            }
+        </h3>
+        @if (!string.IsNullOrEmpty(Model.Excerpt))
+        {
+            <p class="opti-article-card__excerpt">@Model.Excerpt</p>
+        }
+        @if (Model.Tags?.Any() == true)
+        {
+            <div class="opti-article-card__tags">
+                @foreach (var tag in Model.Tags)
+                {
+                    <span class="opti-article-card__tag">@tag</span>
+                }
+            </div>
+        }
+    </div>
+</article>
