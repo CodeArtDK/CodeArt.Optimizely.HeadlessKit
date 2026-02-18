@@ -2,11 +2,26 @@
 
   <PropertyGroup>
     <Version>1.0.0</Version>
-    <Authors>CodeArt</Authors>
-    <Company>CodeArt</Company>
+    <Authors>Allan Thraen, CodeArt</Authors>
+    <Company>CodeArt ApS</Company>
+    <Copyright>Copyright (c) 2026 CodeArt ApS</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/CodeArt/CodeArt-Optimizely-HeadlessKit</RepositoryUrl>
+    <RepositoryUrl>https://github.com/CodeArtDK/CodeArt.Optimizely.HeadlessKit</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/CodeArtDK/CodeArt.Optimizely.HeadlessKit</PackageProjectUrl>
   </PropertyGroup>
+
+  <!-- SourceLink & deterministic build -->
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>embedded</DebugType>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
 
 </Project>
