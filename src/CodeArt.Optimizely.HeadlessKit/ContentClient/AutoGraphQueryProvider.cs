@@ -3,16 +3,30 @@ using System.Text;
 
 namespace CodeArt.Optimizely.HeadlessKit.ContentClient
 {
+    /// <summary>
+    /// Generates GraphQL queries automatically from registered content types.
+    /// Builds inline fragments for all page types and composition selections for component types.
+    /// The generated query is lazily computed and cached.
+    /// </summary>
     public class AutoGraphQueryProvider : IGraphQueryProvider
     {
         private readonly Lazy<string> _mainQuery;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="AutoGraphQueryProvider"/> using the specified content type registry.
+        /// </summary>
+        /// <param name="contentTypeRegistry">The registry providing page and component types for query generation.</param>
         public AutoGraphQueryProvider(IContentTypeRegistry contentTypeRegistry)
         {
             var registry = contentTypeRegistry ?? throw new ArgumentNullException(nameof(contentTypeRegistry));
             _mainQuery = new Lazy<string>(() => GenerateMainQuery(registry));
         }
 
+        /// <summary>
+        /// Returns the main query containing <c>MainContentQuery</c>, <c>GetContentByKey</c>,
+        /// <c>GetChildrenByKey</c>, and <c>GetContentByKeyAndVersion</c> operations.
+        /// </summary>
+        /// <returns>A multi-operation GraphQL query string with inline fragments for all registered types.</returns>
         public string ProvideMainRelativePathQuery()
         {
             return _mainQuery.Value;

@@ -8,8 +8,14 @@ using System.Threading.Tasks;
 
 namespace CodeArt.Optimizely.HeadlessKit.Core.Models
 {
+    /// <summary>
+    /// Represents rich text content from Optimizely Graph.
+    /// </summary>
     public class GraphContentRichText
     {
+        /// <summary>
+        /// Gets or sets the rendered HTML string.
+        /// </summary>
         [JsonPropertyName("html")]
         public string? Html { get; set; }
 

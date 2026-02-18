@@ -2,8 +2,14 @@ using CodeArt.Optimizely.HeadlessKit.Core.Models.Composition;
 
 namespace CodeArt.Optimizely.HeadlessKit.Mvc.Rendering
 {
+    /// <summary>
+    /// Default <see cref="IDisplaySettingsResolver"/> that generates <c>opti-{value}</c> CSS classes
+    /// and <c>data-display-{key}</c> HTML data attributes from composition display settings.
+    /// Replace via DI with a custom implementation for different naming conventions.
+    /// </summary>
     public class DefaultDisplaySettingsResolver : IDisplaySettingsResolver
     {
+        /// <inheritdoc />
         public string ResolveCssClasses(ICompositionNode node)
         {
             if (node.DisplaySettings == null || node.DisplaySettings.Count == 0)
@@ -17,6 +23,7 @@ namespace CodeArt.Optimizely.HeadlessKit.Mvc.Rendering
             return string.Join(" ", classes);
         }
 
+        /// <inheritdoc />
         public IDictionary<string, string> ResolveDataAttributes(ICompositionNode node)
         {
             var attributes = new Dictionary<string, string>();

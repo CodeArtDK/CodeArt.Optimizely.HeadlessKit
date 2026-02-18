@@ -1,10 +1,17 @@
 # SaaS CMS Type Builder
 
+> **Note:** This document has been superseded by the comprehensive documentation guides:
+> - [Getting Started](getting-started.md) -- Setup and first steps
+> - [Content Types](content-types.md) -- Full attribute reference and type sync behavior
+> - [Display Templates](display-templates.md) -- Editor display settings
+
+## Quick Reference
+
 This library lets .NET applications define Optimizely CMS (SaaS) content types as POCOs with attributes. On startup, it scans the application assemblies, compares the discovered definitions with the SaaS CMS API, and creates or updates any missing content types and display templates without deleting anything.
 
-## Configuration
+### Configuration
 
-Configure connection settings via the `SaaSCMS` section (or by passing options to `AddSaaSCMSTypeBuilder`):
+Configure connection settings via the `SaaSCMS` section:
 
 ```json
 {
@@ -14,29 +21,26 @@ Configure connection settings via the `SaaSCMS` section (or by passing options t
     "TokenEndpoint": "/oauth/token",
     "ClientId": "<client-id>",
     "ClientSecret": "<client-secret>",
-    "SyncOnStartup": true
+    "SyncOnStartup": true,
+    "UpdateExistingContentTypes": true,
+    "UpdateExistingDisplayTemplates": true
   }
 }
 ```
 
-`ApiBaseUrl` and `TokenEndpoint` can point to SaaS or PaaS instances. Use `ContentTypeSources` if you need to restrict which existing types are listed when syncing.
+### Service Registration
 
-## Startup Sync Behavior
+```csharp
+builder.Services.AddSaaSCMSTypeBuilder(builder.Configuration);
+```
 
-`SaaSCMSTypeSyncHostedService` runs at startup when `SyncOnStartup` is enabled. It:
+### Annotation Summary
 
-1. Scans all loaded assemblies for `[ContentType]` and `[DisplayTemplate]` annotations.
-2. Fetches existing content types from the SaaS CMS API.
-3. Creates missing types and updates existing ones (if `UpdateExistingContentTypes` is enabled).
-4. Updates display templates (if `UpdateExistingDisplayTemplates` is enabled).
-
-No deletions are performed.
-
-## Annotation Summary
-
-- **Content types**: `[ContentType("Key", BaseTypes.Component, ...)]`
-- **Properties**: `[CMSProperty(DisplayName = "...", Format = "shortString", ...)]`
+- **Content types**: `[ContentType("Key", BaseTypes.Element)]`
+- **Properties**: `[CMSProperty(DisplayName = "...", Format = PropertyFormats.ShortString)]`
+- **Localizable**: `[CultureSpecific]`
 - **Choices**: `[CMSPropertyChoice("value", "Display Name")]`
-- **Display templates**: derive from `SaaSDisplayTemplate` and set `Key`, `ContentType`, `NodeType`, `BaseType`, and `Settings`.
+- **Display templates**: Derive from `SaaSDisplayTemplate` with `[DisplayTemplate]`
+- **Display settings**: `[DisplayTemplateSetting]` + `[DisplayTemplateChoice]`
 
-See `GraphTypeBuilderSite` for practical examples.
+See the [Content Types](content-types.md) and [Display Templates](display-templates.md) guides for full documentation.

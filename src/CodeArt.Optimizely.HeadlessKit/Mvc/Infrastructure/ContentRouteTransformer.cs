@@ -6,17 +6,33 @@ using Microsoft.AspNetCore.Routing;
 
 namespace CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure
 {
+    /// <summary>
+    /// ASP.NET Core <see cref="DynamicRouteValueTransformer"/> that resolves CMS content from incoming URLs.
+    /// Fetches content from Optimizely Graph by path and maps the result to the appropriate
+    /// Razor Page or Controller using <see cref="TemplateCoordinator"/>.
+    /// </summary>
+    /// <remarks>
+    /// Handles both regular content requests (resolved by URL path) and CMS preview requests
+    /// (via the <c>/preview</c> endpoint with <c>key</c>, <c>ver</c>, and <c>preview_token</c>
+    /// query parameters). The resolved content is stored in <c>HttpContext.Items["CurrentContent"]</c>.
+    /// </remarks>
     public class ContentRouteTransformer : DynamicRouteValueTransformer
     {
         private readonly ContentGraphClient _contentGraphClient;
         private readonly TemplateCoordinator _templateCoordinator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentRouteTransformer"/> class.
+        /// </summary>
+        /// <param name="contentGraphClient">The Graph client for fetching content by path or key.</param>
+        /// <param name="templateCoordinator">The coordinator for resolving content types to rendering templates.</param>
         public ContentRouteTransformer(ContentGraphClient contentGraphClient, TemplateCoordinator templateCoordinator)
         {
             _contentGraphClient = contentGraphClient;
             _templateCoordinator = templateCoordinator;
         }
 
+        /// <inheritdoc />
         public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
             //If we have content, lookup the rendering controller for the content item

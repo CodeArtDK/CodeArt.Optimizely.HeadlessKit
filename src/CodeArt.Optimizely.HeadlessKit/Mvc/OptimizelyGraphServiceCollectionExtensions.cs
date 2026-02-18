@@ -10,14 +10,25 @@ using Microsoft.Extensions.Options;
 
 namespace CodeArt.Optimizely.HeadlessKit.Mvc
 {
+    /// <summary>
+    /// Extension methods for registering all Optimizely Graph services (content client and MVC integration).
+    /// </summary>
     public static class OptimizelyGraphServiceCollectionExtensions
     {
         /// <summary>
-        /// Registers all Optimizely Graph services: content client, type registry,
-        /// query provider, MVC routing, template coordination, and display settings.
+        /// Registers both ContentClient and MVC services using settings from the "OptimizelyGraph" configuration section.
+        /// This is the primary entry point for Graph services. It configures content type registry, query providers,
+        /// <see cref="ContentClient.ContentGraphClient"/>, <see cref="Infrastructure.ContentRouteTransformer"/>,
+        /// template coordination, display settings, and model binding.
         /// </summary>
-        /// <param name="services">The service collection.</param>
-        /// <param name="configuration">The application configuration (reads "OptimizelyGraph" section).</param>
+        /// <param name="services">The service collection to add services to.</param>
+        /// <param name="configuration">The application configuration containing an "OptimizelyGraph" section.</param>
+        /// <returns>The service collection for chaining.</returns>
+        /// <example>
+        /// <code>
+        /// builder.Services.AddOptimizelyGraph(builder.Configuration);
+        /// </code>
+        /// </example>
         public static IServiceCollection AddOptimizelyGraph(this IServiceCollection services, IConfiguration configuration)
         {
             // Bind unified settings
@@ -47,10 +58,13 @@ namespace CodeArt.Optimizely.HeadlessKit.Mvc
         }
 
         /// <summary>
-        /// Registers MVC-specific Optimizely Graph services: routing, template coordination,
-        /// model binding, display settings resolver, and tag helpers.
-        /// Call this after <see cref="ServiceCollectionExtensions.AddCodeArtOptimizelyGraphContentClient"/>.
+        /// Registers only the MVC-specific Optimizely Graph services (routing, template coordination,
+        /// model binding, display settings resolver, and tag helpers).
+        /// Call this after <see cref="ContentClient.ServiceCollectionExtensions.AddCodeArtOptimizelyGraphContentClient"/>
+        /// if you need to register MVC services separately.
         /// </summary>
+        /// <param name="services">The service collection to add services to.</param>
+        /// <returns>The service collection for chaining.</returns>
         public static IServiceCollection AddOptimizelyGraphMvc(this IServiceCollection services)
         {
             return services.AddCodeArtOptimizelyGraphMvc();

@@ -6,6 +6,11 @@ using System.Text.Json.Serialization;
 
 namespace CodeArt.Optimizely.HeadlessKit.ContentClient
 {
+    /// <summary>
+    /// Maps .NET content types to GraphQL field selection strings. Inspects public properties
+    /// via reflection and <see cref="JsonPropertyNameAttribute"/> to generate the appropriate
+    /// field selections, including nested objects, lists, and composition nodes.
+    /// </summary>
     public static class GraphFieldMapper
     {
         private static readonly HashSet<Type> _scalarTypes = new()
@@ -20,6 +25,13 @@ namespace CodeArt.Optimizely.HeadlessKit.ContentClient
             typeof(long), typeof(long?)
         };
 
+        /// <summary>
+        /// Builds a GraphQL field selection string for the specified content type by reflecting over its public properties.
+        /// Handles scalar types, metadata, rich text, content references, URLs, nested objects, and lists.
+        /// </summary>
+        /// <param name="contentType">The .NET content type to generate field selections for.</param>
+        /// <param name="visited">Optional set to track visited types and prevent infinite recursion.</param>
+        /// <returns>A multi-line string of GraphQL field selections.</returns>
         public static string BuildFieldSelection(Type contentType, HashSet<Type>? visited = null)
         {
             visited ??= new HashSet<Type>();
@@ -90,9 +102,11 @@ namespace CodeArt.Optimizely.HeadlessKit.ContentClient
         }
 
         /// <summary>
-        /// Builds field selection excluding _metadata (for use inside inline fragments
-        /// where _metadata is already selected at the parent level).
+        /// Builds field selection excluding <c>_metadata</c>, for use inside inline fragments
+        /// where <c>_metadata</c> is already selected at the parent level.
         /// </summary>
+        /// <param name="contentType">The .NET content type to generate field selections for.</param>
+        /// <returns>A multi-line string of GraphQL field selections without the metadata block.</returns>
         public static string BuildFieldSelectionWithoutMetadata(Type contentType)
         {
             var full = BuildFieldSelection(contentType);
@@ -102,6 +116,14 @@ namespace CodeArt.Optimizely.HeadlessKit.ContentClient
             return string.Join('\n', lines);
         }
 
+        /// <summary>
+        /// Builds a GraphQL composition selection with structure and component node fragments.
+        /// Generates recursive node selections up to the specified depth with inline fragments
+        /// for each registered component type.
+        /// </summary>
+        /// <param name="componentTypes">The component types to include as inline fragments.</param>
+        /// <param name="depth">The maximum nesting depth for recursive node traversal. Defaults to 3.</param>
+        /// <returns>A multi-line GraphQL composition selection string.</returns>
         public static string BuildCompositionSelection(IEnumerable<Type> componentTypes, int depth = 3)
         {
             var sb = new StringBuilder();

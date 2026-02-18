@@ -3,6 +3,10 @@ using System.Text.Json;
 
 namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder.Sync
 {
+    /// <summary>
+    /// Compares a local content type definition against a remote one to detect changes
+    /// and build a merge-patch payload containing only the changed fields.
+    /// </summary>
     public class ContentTypeComparer
     {
         private static readonly JsonSerializerOptions _jsonOptions = new()
@@ -10,11 +14,19 @@ namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder.Sync
             PropertyNameCaseInsensitive = true
         };
 
+        /// <summary>
+        /// Gets whether differences were detected between the local and remote content types.
+        /// </summary>
         public bool HasChanges { get; private set; }
 
         private readonly SaaSContentType _local;
         private readonly SaaSContentType _remote;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentTypeComparer"/> class and performs comparison.
+        /// </summary>
+        /// <param name="local">The locally-defined content type.</param>
+        /// <param name="remote">The remote content type from the CMS API.</param>
         public ContentTypeComparer(SaaSContentType local, SaaSContentType remote)
         {
             _local = local ?? throw new ArgumentNullException(nameof(local));
@@ -22,6 +34,10 @@ namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder.Sync
             HasChanges = DetectChanges();
         }
 
+        /// <summary>
+        /// Returns a content type object containing only the changed fields, suitable for a merge-patch request.
+        /// </summary>
+        /// <returns>A <see cref="SaaSContentType"/> with only the fields that differ from the remote type.</returns>
         public SaaSContentType BuildPatchPayload()
         {
             if (!HasChanges)
@@ -234,13 +250,24 @@ namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder.Sync
         }
     }
 
+    /// <summary>
+    /// Compares a local display template definition against a remote one to detect changes.
+    /// </summary>
     public class DisplayTemplateComparer
     {
+        /// <summary>
+        /// Gets whether differences were detected between the local and remote display templates.
+        /// </summary>
         public bool HasChanges { get; private set; }
 
         private readonly SaaSDisplayTemplate _local;
         private readonly SaaSDisplayTemplate _remote;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DisplayTemplateComparer"/> class and performs comparison.
+        /// </summary>
+        /// <param name="local">The locally-defined display template.</param>
+        /// <param name="remote">The remote display template from the CMS API.</param>
         public DisplayTemplateComparer(SaaSDisplayTemplate local, SaaSDisplayTemplate remote)
         {
             _local = local ?? throw new ArgumentNullException(nameof(local));
@@ -248,6 +275,10 @@ namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder.Sync
             HasChanges = DetectChanges();
         }
 
+        /// <summary>
+        /// Returns the full local display template as the patch payload.
+        /// </summary>
+        /// <returns>The local <see cref="SaaSDisplayTemplate"/> definition.</returns>
         public SaaSDisplayTemplate BuildPatchPayload()
         {
             // For display templates, send the full local object since they're simpler

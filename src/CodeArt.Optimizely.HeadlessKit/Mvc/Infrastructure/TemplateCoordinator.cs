@@ -9,11 +9,21 @@ using System.Reflection;
 
 namespace CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure
 {
+    /// <summary>
+    /// Discovers and coordinates template mappings between content types and their rendering
+    /// templates (Razor Pages, Controllers, ViewComponents). Scans assemblies for
+    /// <see cref="TemplateDescriptorAttribute"/> at startup to build the mapping dictionary.
+    /// </summary>
     public class TemplateCoordinator : IInitializable
     {
         private Dictionary<Type, List<TemplateMappingInfo>> _templateMappings { get; set; }
         private IEnumerable<EndpointDataSource> _endpointDataSources { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateCoordinator"/> class and scans
+        /// all loaded assemblies for <see cref="TemplateDescriptorAttribute"/> to build template mappings.
+        /// </summary>
+        /// <param name="endpointDataSources">The endpoint data sources used to resolve Razor Page paths.</param>
         public TemplateCoordinator(IEnumerable<EndpointDataSource> endpointDataSources)
         {
             _endpointDataSources = endpointDataSources;
@@ -42,6 +52,14 @@ namespace CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure
             }
         }
 
+        /// <summary>
+        /// Returns the template mapping info for a content type, optionally filtered by rendering tag.
+        /// Walks up the type hierarchy if no direct mapping is found.
+        /// </summary>
+        /// <param name="type">The content type to find a template for.</param>
+        /// <param name="renderingTag">Optional rendering tag to filter by.</param>
+        /// <param name="component">If <c>true</c>, only returns ViewComponent mappings.</param>
+        /// <returns>The matching template mapping info, or <c>null</c> if none is found.</returns>
         public TemplateMappingInfo? GetTemplateMappingInfo(Type type, string? renderingTag = null, bool component = false)
         {
 
@@ -60,6 +78,12 @@ namespace CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure
             return null;
         }
 
+        /// <summary>
+        /// Gets the Razor Page path for a content type.
+        /// </summary>
+        /// <param name="type">The content type to find a Razor Page for.</param>
+        /// <param name="renderingTag">Optional rendering tag to filter by.</param>
+        /// <returns>The Razor Page path, or <c>null</c> if no Razor Page template is registered.</returns>
         public string? GetTemplateEndpointForType(Type type, string? renderingTag = null)
         {
             var mapping = GetTemplateMappingInfo(type, renderingTag);
@@ -84,6 +108,12 @@ namespace CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure
             return null;
         }
 
+        /// <summary>
+        /// Gets the ViewComponent type registered for a content type.
+        /// </summary>
+        /// <param name="type">The content type to find a ViewComponent for.</param>
+        /// <param name="renderingTag">Optional rendering tag to filter by.</param>
+        /// <returns>The ViewComponent type, or <c>null</c> if no ViewComponent template is registered.</returns>
         public Type? GetComponentForType(Type type, string? renderingTag = null)
         {
             var mapping = GetTemplateMappingInfo(type, renderingTag, true);
@@ -91,6 +121,7 @@ namespace CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure
             return mapping.TemplateType;
         }
 
+        /// <inheritdoc />
         public async Task InitializeAsync()
         {
 

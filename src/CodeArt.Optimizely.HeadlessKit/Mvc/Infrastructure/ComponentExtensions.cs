@@ -9,8 +9,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure
 {
+    /// <summary>
+    /// Extension methods on <see cref="IViewComponentHelper"/> for rendering content items
+    /// via their registered ViewComponents.
+    /// </summary>
     public static class ComponentExtensions
     {
+        /// <summary>
+        /// Renders the registered ViewComponent for the given content item, falling back to
+        /// <see cref="DefaultContentViewComponent"/> if no custom component is found.
+        /// </summary>
+        /// <param name="component">The view component helper.</param>
+        /// <param name="graphContent">The content item to render.</param>
+        /// <param name="renderingTag">Optional rendering tag to select an alternate template.</param>
+        /// <returns>The rendered HTML content.</returns>
         public static async Task<IHtmlContent> InvokeGraphContentComponentAsync(this IViewComponentHelper component, IGraphContent graphContent, string? renderingTag = null)
         {
             // Resolve TemplateCoordinator from the ViewContext's HttpContext
@@ -28,6 +40,13 @@ namespace CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure
                 new { model = graphContent });
         }
 
+        /// <summary>
+        /// Renders the registered ViewComponent for the content item within a composition node.
+        /// Returns empty content if the node is not a component node or has no associated content.
+        /// </summary>
+        /// <param name="component">The view component helper.</param>
+        /// <param name="node">The composition node containing the content to render.</param>
+        /// <returns>The rendered HTML content, or <see cref="HtmlString.Empty"/> if the node has no component.</returns>
         public static async Task<IHtmlContent> InvokeGraphContentComponentAsync(this IViewComponentHelper component, ICompositionNode node)
         {
             if (node is not CompositionComponentNode componentNode || componentNode.Component == null)

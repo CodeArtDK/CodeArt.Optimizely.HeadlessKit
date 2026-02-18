@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 
 namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder
 {
+    /// <summary>
+    /// Orchestrates synchronization of locally-defined content types and display templates
+    /// with the remote Optimizely SaaS CMS API. Creates new types and updates changed types,
+    /// but never deletes to avoid accidental content loss.
+    /// </summary>
     public class CMSTypeSyncService
     {
         private readonly SaaSCMSClient _cmsClient;
@@ -19,6 +24,14 @@ namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder
         private readonly SaaSCMSSettings _settings;
         private readonly ILogger<CMSTypeSyncService> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CMSTypeSyncService"/> class.
+        /// </summary>
+        /// <param name="saaSCMSClient">The CMS REST API client.</param>
+        /// <param name="contentTypeProvider">Provider for locally-discovered content type definitions.</param>
+        /// <param name="displayTemplateProvider">Provider for locally-discovered display template definitions.</param>
+        /// <param name="settings">The SaaS CMS settings.</param>
+        /// <param name="logger">Logger instance.</param>
         public CMSTypeSyncService(
             SaaSCMSClient saaSCMSClient,
             IContentTypeProvider contentTypeProvider,
@@ -33,6 +46,12 @@ namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <summary>
+        /// Discovers content types from annotations, compares them with remote definitions,
+        /// and creates or updates as needed. Returns a report of the sync results.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A <see cref="SyncReport"/> describing created, updated, unchanged, and failed types.</returns>
         public async Task<SyncReport> SyncContentTypes(CancellationToken cancellationToken = default)
         {
             var report = new SyncReport();
@@ -101,6 +120,12 @@ namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder
             return report;
         }
 
+        /// <summary>
+        /// Discovers display templates from annotations, compares them with remote definitions,
+        /// and creates or updates as needed. Returns a report of the sync results.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A <see cref="SyncReport"/> describing created, updated, unchanged, and failed templates.</returns>
         public async Task<SyncReport> SyncDisplayTemplates(CancellationToken cancellationToken = default)
         {
             var report = new SyncReport();

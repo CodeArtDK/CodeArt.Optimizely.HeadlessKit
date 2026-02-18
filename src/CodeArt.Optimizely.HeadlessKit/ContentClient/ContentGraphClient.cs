@@ -14,6 +14,23 @@ using System.Threading.Tasks;
 
 namespace CodeArt.Optimizely.HeadlessKit.ContentClient
 {
+    /// <summary>
+    /// Main client for querying content from Optimizely Graph via GraphQL.
+    /// Provides methods to load content by path, key, or version, as well as
+    /// a fluent query builder entry point and raw query execution.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// // Load a page by URL path
+    /// var page = await client.GetContentByPath&lt;StandardPage&gt;("/en/about-us");
+    ///
+    /// // Use the fluent query builder
+    /// var results = await client.Query&lt;StandardPage&gt;()
+    ///     .Where(f => f.Metadata.Status.Eq("Published"))
+    ///     .Take(10)
+    ///     .ToListAsync();
+    /// </code>
+    /// </example>
     public class ContentGraphClient
     {
         private readonly IGraphQueryProvider _graphQueryProvider;
@@ -22,6 +39,12 @@ namespace CodeArt.Optimizely.HeadlessKit.ContentClient
 
         private GraphQLHttpClient _client = new GraphQLHttpClient("https://cg.optimizely.com/content/v2?auth=placeholder", new SystemTextJsonSerializer());
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentGraphClient"/> class.
+        /// </summary>
+        /// <param name="graphQueryProvider">Provider for pre-built GraphQL queries.</param>
+        /// <param name="options">Optimizely Graph connection options including endpoint and single key.</param>
+        /// <param name="contentTypeRegistry">Optional registry for resolving content types at runtime.</param>
         public ContentGraphClient(IGraphQueryProvider graphQueryProvider, IOptions<ContentGraphOptions> options, IContentTypeRegistry? contentTypeRegistry = null)
         {
             _graphQueryProvider = graphQueryProvider ?? throw new ArgumentNullException(nameof(graphQueryProvider));
@@ -70,12 +93,23 @@ namespace CodeArt.Optimizely.HeadlessKit.ContentClient
                 Console.WriteLine(JsonSerializer.Serialize(data, _debugJsonOptions));
         }
 
-        // Fluent query builder entry point
+        /// <summary>
+        /// Returns a fluent <see cref="GraphQueryBuilder{T}"/> for building custom typed GraphQL queries.
+        /// </summary>
+        /// <typeparam name="T">The content model type to query for.</typeparam>
+        /// <returns>A new <see cref="GraphQueryBuilder{T}"/> pre-configured with this client and the content type registry.</returns>
         public GraphQueryBuilder<T> Query<T>() where T : class, IGraphContent, new()
         {
             return new GraphQueryBuilder<T>(this, _contentTypeRegistry!);
         }
 
+        /// <summary>
+        /// Loads a single content item by its URL path.
+        /// </summary>
+        /// <typeparam name="TContentModel">The content model type to deserialize into.</typeparam>
+        /// <param name="path">The URL path of the content item (e.g. "/en/about-us").</param>
+        /// <param name="locale">Optional locale filter. Defaults to all locales if not specified.</param>
+        /// <returns>The content item, or <c>null</c> if not found.</returns>
         public async Task<TContentModel?> GetContentByPath<TContentModel>(string path, string[]? locale = null) where TContentModel : class, IGraphContent
         {
 
@@ -166,6 +200,13 @@ query MainContentQuery($path: String!, $locale: [Locales]) {
 
             return DeserializeExperienceJson<TContentModel>(r1.Data);
         }
+        /// <summary>
+        /// Loads a single content item by its content key.
+        /// </summary>
+        /// <typeparam name="TContentModel">The content model type to deserialize into.</typeparam>
+        /// <param name="key">The unique content key.</param>
+        /// <param name="locale">Optional locale filter. Defaults to all locales if not specified.</param>
+        /// <returns>The content item, or <c>null</c> if not found.</returns>
         public async Task<TContentModel?> GetContentByKey<TContentModel>(string key, string[]? locale = null) where TContentModel : class, IGraphContent
         {
             const string query = @"
@@ -194,6 +235,16 @@ query GetContentByKey($key: String!, $locale: [Locales]) {
             return DeserializeExperienceJson<TContentModel>(r1.Data);
         }
 
+        /// <summary>
+        /// Loads a specific content version for CMS preview. Uses Bearer token authentication
+        /// to access draft or versioned content not yet published.
+        /// </summary>
+        /// <typeparam name="TContentModel">The content model type to deserialize into.</typeparam>
+        /// <param name="key">The unique content key.</param>
+        /// <param name="version">The content version identifier.</param>
+        /// <param name="previewToken">The CMS preview bearer token for authentication.</param>
+        /// <param name="locale">Optional locale filter. Defaults to all locales if not specified.</param>
+        /// <returns>The content item at the specified version, or <c>null</c> if not found.</returns>
         public async Task<TContentModel?> GetPreviewContentByKey<TContentModel>(string key, string version, string previewToken, string[]? locale = null) where TContentModel : class, IGraphContent
         {
             const string query = @"
@@ -242,6 +293,13 @@ query GetChildrenByKey($key: String!, $locale: [Locales]) {
   }
 }";
 
+        /// <summary>
+        /// Loads child content items for a given parent content key.
+        /// </summary>
+        /// <typeparam name="TContentModel">The content model type to deserialize children into.</typeparam>
+        /// <param name="parentkey">The content key of the parent item.</param>
+        /// <param name="locale">Optional locale filter.</param>
+        /// <returns>A list of child content items, or <c>null</c> if the parent is not found.</returns>
         public async Task<List<TContentModel>?> GetChildren<TContentModel>(string parentkey, string[]? locale = null) where TContentModel : class, IGraphContent
         {
             var variables = new { key = parentkey, locale };
@@ -267,10 +325,26 @@ query GetChildrenByKey($key: String!, $locale: [Locales]) {
             return resp?.Content?.Items?.OfType<TContentModel>().ToList();
         }
 
-        // Execute a raw GraphQL query string and deserialize the response
+        /// <summary>
+        /// Executes a raw GraphQL query string and deserializes the response.
+        /// Uses the type name of <typeparamref name="T"/> as the response key.
+        /// </summary>
+        /// <typeparam name="T">The content model type to deserialize results into.</typeparam>
+        /// <param name="graphqlQuery">The raw GraphQL query string.</param>
+        /// <returns>A <see cref="GraphQueryResult{T}"/> containing the matched items, total count, and pagination cursor.</returns>
+        /// <exception cref="GraphQueryException">Thrown when the GraphQL query returns errors.</exception>
         public Task<GraphQueryResult<T>> ExecuteQueryAsync<T>(string graphqlQuery) where T : class, IGraphContent, new()
             => ExecuteQueryAsync<T>(graphqlQuery, typeof(T).Name);
 
+        /// <summary>
+        /// Executes a raw GraphQL query string with a custom response key for locating
+        /// the result data in the GraphQL response.
+        /// </summary>
+        /// <typeparam name="T">The content model type to deserialize results into.</typeparam>
+        /// <param name="graphqlQuery">The raw GraphQL query string.</param>
+        /// <param name="responseKey">The key in the GraphQL response that contains the result data (e.g. type name or alias).</param>
+        /// <returns>A <see cref="GraphQueryResult{T}"/> containing the matched items, total count, and pagination cursor.</returns>
+        /// <exception cref="GraphQueryException">Thrown when the GraphQL query returns errors.</exception>
         public async Task<GraphQueryResult<T>> ExecuteQueryAsync<T>(string graphqlQuery, string responseKey) where T : class, IGraphContent, new()
         {
             var typeName = responseKey;
@@ -322,9 +396,15 @@ query GetChildrenByKey($key: String!, $locale: [Locales]) {
         }
 
         /// <summary>
-        /// Execute a query that returns items with _json fields (for union types like _Page).
-        /// Each item's _json is deserialized polymorphically using __typename.
+        /// Executes a query that returns items with <c>_json</c> fields for polymorphic deserialization.
+        /// Each item's <c>_json</c> is deserialized using the <c>__typename</c> field to resolve the concrete type.
+        /// Useful for union type queries such as <c>_Page</c>.
         /// </summary>
+        /// <typeparam name="T">The base content model type to deserialize results into.</typeparam>
+        /// <param name="graphqlQuery">The raw GraphQL query string.</param>
+        /// <param name="responseKey">The key in the GraphQL response that contains the result data.</param>
+        /// <returns>A <see cref="GraphQueryResult{T}"/> containing the matched items, total count, and pagination cursor.</returns>
+        /// <exception cref="GraphQueryException">Thrown when the GraphQL query returns errors.</exception>
         public async Task<GraphQueryResult<T>> ExecuteJsonItemsQueryAsync<T>(string graphqlQuery, string responseKey) where T : class, IGraphContent, new()
         {
             var req = new GraphQLRequest
@@ -385,12 +465,27 @@ query GetChildrenByKey($key: String!, $locale: [Locales]) {
         }
     }
 
+    /// <summary>
+    /// Extension methods for safe navigation of <see cref="JsonElement"/> values.
+    /// </summary>
     public static partial class JsonExtensions
     {
+        /// <summary>
+        /// Gets a child property by name, returning <c>null</c> if the element is null, undefined, or the property does not exist.
+        /// </summary>
+        /// <param name="element">The JSON element to read from.</param>
+        /// <param name="name">The property name to look up.</param>
+        /// <returns>The child <see cref="JsonElement"/>, or <c>null</c> if not found.</returns>
         public static JsonElement? Get(this JsonElement element, string name) =>
             element.ValueKind != JsonValueKind.Null && element.ValueKind != JsonValueKind.Undefined && element.TryGetProperty(name, out var value)
                 ? value : (JsonElement?)null;
 
+        /// <summary>
+        /// Gets an array element by index, returning <c>null</c> if the element is null, undefined, or the index is out of range.
+        /// </summary>
+        /// <param name="element">The JSON array element to read from.</param>
+        /// <param name="index">The zero-based index of the array element.</param>
+        /// <returns>The array element at the specified index, or <c>null</c> if not found.</returns>
         public static JsonElement? Get(this JsonElement element, int index)
         {
             if (element.ValueKind == JsonValueKind.Null || element.ValueKind == JsonValueKind.Undefined)

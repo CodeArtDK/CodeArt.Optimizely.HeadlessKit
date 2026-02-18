@@ -10,20 +10,52 @@ using System;
 
 namespace CodeArt.Optimizely.HeadlessKit.TypeBuilder
 {
+    /// <summary>
+    /// Extension methods for registering SaaS CMS TypeBuilder services in the dependency injection container.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Registers all TypeBuilder services using settings from the "SaaSCMS" configuration section.
+        /// This configures OAuth2 token management, <see cref="SaaSCMSClient"/>, <see cref="AppDomainScanner"/>,
+        /// <see cref="CMSTypeSyncService"/>, the hosted sync service, and <see cref="IDisplayTemplateResolver"/>.
+        /// </summary>
+        /// <param name="services">The service collection to add services to.</param>
+        /// <param name="configuration">The application configuration containing a "SaaSCMS" section.</param>
+        /// <returns>The service collection for chaining.</returns>
+        /// <example>
+        /// <code>
+        /// builder.Services.AddSaaSCMSTypeBuilder(builder.Configuration);
+        /// </code>
+        /// </example>
         public static IServiceCollection AddSaaSCMSTypeBuilder(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SaaSCMSSettings>(configuration.GetSection(SaaSCMSSettings.SectionName));
             return services.AddSaaSCMSTypeBuilderCore();
         }
 
+        /// <summary>
+        /// Registers all TypeBuilder services with inline settings configuration via a delegate.
+        /// This configures OAuth2 token management, <see cref="SaaSCMSClient"/>, <see cref="AppDomainScanner"/>,
+        /// <see cref="CMSTypeSyncService"/>, the hosted sync service, and <see cref="IDisplayTemplateResolver"/>.
+        /// </summary>
+        /// <param name="services">The service collection to add services to.</param>
+        /// <param name="configureSettings">A delegate to configure <see cref="SaaSCMSSettings"/>.</param>
+        /// <returns>The service collection for chaining.</returns>
         public static IServiceCollection AddSaaSCMSTypeBuilder(this IServiceCollection services, Action<SaaSCMSSettings> configureSettings)
         {
             services.Configure(configureSettings);
             return services.AddSaaSCMSTypeBuilderCore();
         }
 
+        /// <summary>
+        /// Registers all TypeBuilder services expecting <see cref="IOptions{SaaSCMSSettings}"/> to be already
+        /// configured in the container. Use this overload when you bind settings yourself before calling this method.
+        /// This configures OAuth2 token management, <see cref="SaaSCMSClient"/>, <see cref="AppDomainScanner"/>,
+        /// <see cref="CMSTypeSyncService"/>, the hosted sync service, and <see cref="IDisplayTemplateResolver"/>.
+        /// </summary>
+        /// <param name="services">The service collection to add services to.</param>
+        /// <returns>The service collection for chaining.</returns>
         public static IServiceCollection AddSaaSCMSTypeBuilder(this IServiceCollection services)
         {
             services.AddOptions<SaaSCMSSettings>();

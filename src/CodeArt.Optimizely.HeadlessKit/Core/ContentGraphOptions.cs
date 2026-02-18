@@ -6,11 +6,24 @@ using System.Threading.Tasks;
 
 namespace CodeArt.Optimizely.HeadlessKit.Core
 {
+    /// <summary>
+    /// Configuration options for Optimizely Graph content queries.
+    /// </summary>
     public class ContentGraphOptions
     {
+        /// <summary>
+        /// Gets or sets the Optimizely Graph API endpoint URL.
+        /// </summary>
         public string Endpoint { get; set; } = "https://cg.optimizely.com/content/v2";
+
+        /// <summary>
+        /// Gets or sets the single-key authentication token for the Graph API.
+        /// </summary>
         public string SingleKey { get; set; }
 
+        /// <summary>
+        /// Gets or sets an optional custom main GraphQL query. When null, the query is auto-generated from registered content types.
+        /// </summary>
         public string? MainQuery { get; set; }
 
         /// <summary>
