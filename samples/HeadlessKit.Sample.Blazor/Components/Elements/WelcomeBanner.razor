@@ -1,0 +1,33 @@
+<div class="welcome-banner">
+    @if (!string.IsNullOrEmpty(Element?.IconClass))
+    {
+        <span class="banner-icon">@Element.IconClass</span>
+    }
+    <div class="banner-content">
+        <h2>@Greeting</h2>
+        @if (!string.IsNullOrEmpty(Element?.Subtitle))
+        {
+            <p>@Element.Subtitle</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IGraphContent? Content { get; set; }
+
+    [Parameter]
+    public PortalUser? User { get; set; }
+
+    private WelcomeBannerElement? Element => Content as WelcomeBannerElement;
+
+    private string Greeting
+    {
+        get
+        {
+            var template = Element?.GreetingTemplate ?? "Welcome, {name}!";
+            var name = User?.DisplayName ?? "User";
+            return template.Replace("{name}", name);
+        }
+    }
+}

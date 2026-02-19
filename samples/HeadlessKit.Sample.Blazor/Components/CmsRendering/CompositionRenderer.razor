@@ -1,0 +1,15 @@
+@if (Nodes != null)
+{
+    @foreach (var node in Nodes)
+    {
+        <CompositionNode Node="node" User="User" />
+    }
+}
+
+@code {
+    [Parameter]
+    public List<ICompositionNode>? Nodes { get; set; }
+
+    [Parameter]
+    public PortalUser? User { get; set; }
+}

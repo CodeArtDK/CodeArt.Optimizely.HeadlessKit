@@ -24,6 +24,9 @@ dotnet run --project samples/HeadlessKit.Sample.RazorPages/HeadlessKit.Sample.Ra
 # Run the sample site (MVC)
 dotnet run --project samples/HeadlessKit.Sample.Mvc/HeadlessKit.Sample.Mvc.csproj
 
+# Run the sample site (Blazor Server)
+dotnet run --project samples/HeadlessKit.Sample.Blazor/HeadlessKit.Sample.Blazor.csproj
+
 # Create NuGet package
 dotnet pack src/CodeArt.Optimizely.HeadlessKit/CodeArt.Optimizely.HeadlessKit.csproj
 ```
@@ -55,6 +58,7 @@ src/CodeArt.Optimizely.HeadlessKit/       <- single merged library (NuGet packag
 
 samples/HeadlessKit.Sample.RazorPages/    <- demo Razor Pages site
 samples/HeadlessKit.Sample.Mvc/           <- demo MVC site
+samples/HeadlessKit.Sample.Blazor/        <- demo Blazor Server portal site
 test/CodeArt.Optimizely.HeadlessKit.Tests/ <- xUnit tests
 ```
 

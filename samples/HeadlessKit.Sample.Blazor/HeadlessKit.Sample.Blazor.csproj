@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <UserSecretsId>d7e31a42-bf89-4c6a-92f1-3a8e5d7b9c04</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CodeArt.Optimizely.HeadlessKit\CodeArt.Optimizely.HeadlessKit.csproj" />
+  </ItemGroup>
+
+</Project>

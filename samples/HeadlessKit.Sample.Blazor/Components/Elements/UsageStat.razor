@@ -1,0 +1,46 @@
+<div class="usage-stat-card">
+    @if (!string.IsNullOrEmpty(Element?.IconClass))
+    {
+        <span class="stat-icon">@Element.IconClass</span>
+    }
+    <div class="stat-content">
+        <span class="stat-label">@(Element?.Label ?? "Stat")</span>
+        <span class="stat-value">@Value<span class="stat-unit">@(Element?.Unit)</span></span>
+        @if (Element?.MaxValue > 0)
+        {
+            <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: @Percentage%"></div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IGraphContent? Content { get; set; }
+
+    [Parameter]
+    public PortalUser? User { get; set; }
+
+    private UsageStatElement? Element => Content as UsageStatElement;
+
+    private int Value
+    {
+        get
+        {
+            if (Element?.DataKey != null && User?.UsageData?.TryGetValue(Element.DataKey, out var val) == true)
+                return val;
+            return 0;
+        }
+    }
+
+    private int Percentage
+    {
+        get
+        {
+            if (Element?.MaxValue > 0)
+                return Math.Min(100, (int)((double)Value / Element.MaxValue * 100));
+            return 0;
+        }
+    }
+}

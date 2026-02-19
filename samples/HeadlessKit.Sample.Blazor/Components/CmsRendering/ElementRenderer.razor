@@ -1,0 +1,54 @@
+@if (_componentType != null)
+{
+    <DynamicComponent Type="_componentType" Parameters="_parameters" />
+}
+else
+{
+    <div class="element-unknown">
+        <em>Unknown element type: @_typeName</em>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public IGraphContent? Content { get; set; }
+
+    [Parameter]
+    public PortalUser? User { get; set; }
+
+    private Type? _componentType;
+    private Dictionary<string, object?> _parameters = new();
+    private string? _typeName;
+
+    private static readonly Dictionary<Type, Type> ComponentMap = new()
+    {
+        [typeof(WelcomeBannerElement)] = typeof(WelcomeBanner),
+        [typeof(UsageStatElement)] = typeof(UsageStat),
+        [typeof(InfoCardElement)] = typeof(InfoCard),
+        [typeof(AnnouncementElement)] = typeof(Announcement),
+        [typeof(AccountDetailElement)] = typeof(AccountDetail),
+        [typeof(BillingHistoryElement)] = typeof(BillingHistory),
+    };
+
+    protected override void OnParametersSet()
+    {
+        if (Content == null) return;
+
+        var contentType = Content.GetType();
+        _typeName = contentType.Name;
+
+        if (ComponentMap.TryGetValue(contentType, out var blazorComponent))
+        {
+            _componentType = blazorComponent;
+            _parameters = new Dictionary<string, object?>
+            {
+                ["Content"] = Content,
+                ["User"] = User
+            };
+        }
+        else
+        {
+            _componentType = null;
+        }
+    }
+}

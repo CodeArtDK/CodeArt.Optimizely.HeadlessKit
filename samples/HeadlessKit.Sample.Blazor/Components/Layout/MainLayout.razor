@@ -1,0 +1,32 @@
+@inherits LayoutComponentBase
+@inject PortalUserService UserService
+
+<AuthorizeView>
+    <Authorized>
+        <div class="portal-container">
+            <nav class="portal-sidebar">
+                <div class="sidebar-header">
+                    <span class="sidebar-logo">&#9729;</span>
+                    <h2>CloudPulse</h2>
+                </div>
+                <ul class="sidebar-nav">
+                    <li><a href="/portal"><span class="nav-icon">&#9632;</span> Dashboard</a></li>
+                    <li><a href="/portal/account"><span class="nav-icon">&#9786;</span> Account</a></li>
+                    <li><a href="/portal/billing"><span class="nav-icon">&#9830;</span> Billing</a></li>
+                </ul>
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <span class="user-avatar">@(context.User.Identity?.Name?.Substring(0, 1).ToUpper())</span>
+                        <span class="user-name">@(context.User.FindFirst("DisplayName")?.Value ?? context.User.Identity?.Name)</span>
+                    </div>
+                    <form method="post" action="/api/auth/logout">
+                        <button type="submit" class="logout-btn">Sign out</button>
+                    </form>
+                </div>
+            </nav>
+            <main class="portal-main">
+                @Body
+            </main>
+        </div>
+    </Authorized>
+</AuthorizeView>

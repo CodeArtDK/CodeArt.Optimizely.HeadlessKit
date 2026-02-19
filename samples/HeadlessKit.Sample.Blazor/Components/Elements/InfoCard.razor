@@ -1,0 +1,25 @@
+<div class="info-card">
+    @if (!string.IsNullOrEmpty(Element?.IconClass))
+    {
+        <span class="info-icon">@Element.IconClass</span>
+    }
+    <h3>@(Element?.Title ?? "Info")</h3>
+    @if (!string.IsNullOrEmpty(Element?.Description))
+    {
+        <p>@Element.Description</p>
+    }
+    @if (!string.IsNullOrEmpty(Element?.LinkText) && Element?.Link?.Default != null)
+    {
+        <a href="@Element.Link.Default" class="info-link">@Element.LinkText</a>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IGraphContent? Content { get; set; }
+
+    [Parameter]
+    public PortalUser? User { get; set; }
+
+    private InfoCardElement? Element => Content as InfoCardElement;
+}

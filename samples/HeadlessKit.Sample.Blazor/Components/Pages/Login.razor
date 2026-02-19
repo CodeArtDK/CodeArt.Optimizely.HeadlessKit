@@ -1,0 +1,45 @@
+@page "/login"
+@layout EmptyLayout
+@attribute [AllowAnonymous]
+
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-header">
+            <span class="login-logo">&#9729;</span>
+            <h1>CloudPulse</h1>
+            <p>Sign in to your portal</p>
+        </div>
+
+        @if (HasError)
+        {
+            <div class="login-error">Invalid username or password.</div>
+        }
+
+        <form method="post" action="/api/auth/login">
+            <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter username" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required />
+            </div>
+            <button type="submit" class="login-button">Sign in</button>
+        </form>
+
+        <div class="login-hint">
+            Demo credentials: <strong>demo</strong> / <strong>demo123</strong>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "error")]
+    public string? Error { get; set; }
+
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+
+    private bool HasError => !string.IsNullOrEmpty(Error);
+}

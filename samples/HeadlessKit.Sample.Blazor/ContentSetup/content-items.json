@@ -1,0 +1,236 @@
+{
+  "_comment": "Content items for the CloudPulse Portal. Create in order: dashboard first, then child pages.",
+  "_api_endpoint": "POST https://api.cms.optimizely.com/preview3/experimental/content",
+  "_note": "Replace CONTAINER values with actual content keys after each creation step.",
+
+  "0_start_page": {
+    "contentType": "PortalDashboard",
+    "container": "43f936c99b234ea397b261c538ad07c9",
+    "locale": "en",
+    "displayName": "CloudPulse Welcome",
+    "status": "draft",
+    "_comment": "Start page with no route segment (CMS URL = /). Public welcome page before login.",
+    "property": {
+      "routeSegment": "",
+      "portalName": "CloudPulse",
+      "supportEmail": "support@cloudpulse.example.com"
+    }
+  },
+
+  "1_dashboard": {
+    "contentType": "PortalDashboard",
+    "container": "43f936c99b234ea397b261c538ad07c9",
+    "locale": "en",
+    "displayName": "CloudPulse Portal",
+    "status": "draft",
+    "property": {
+      "routeSegment": "portal",
+      "portalName": "CloudPulse",
+      "supportEmail": "support@cloudpulse.example.com"
+    }
+  },
+
+  "2_account_page": {
+    "contentType": "PortalPage",
+    "container": "USE_DASHBOARD_KEY_FROM_STEP_1",
+    "locale": "en",
+    "displayName": "Account",
+    "status": "draft",
+    "property": {
+      "routeSegment": "account",
+      "pageTitle": "Account Settings",
+      "pageDescription": "View and manage your account details"
+    }
+  },
+
+  "3_billing_page": {
+    "contentType": "PortalPage",
+    "container": "USE_DASHBOARD_KEY_FROM_STEP_1",
+    "locale": "en",
+    "displayName": "Billing",
+    "status": "draft",
+    "property": {
+      "routeSegment": "billing",
+      "pageTitle": "Billing & Invoices",
+      "pageDescription": "View your billing history and manage payment methods"
+    }
+  },
+
+  "_elements_reference": {
+    "_comment": "These are the element instances to add via Visual Builder compositions. They are NOT created as standalone content items - they are added to pages through the composition editor in Visual Builder.",
+
+    "dashboard_elements": [
+      {
+        "_section": "Welcome Banner (full width)",
+        "contentType": "WelcomeBannerElement",
+        "property": {
+          "greetingTemplate": "Welcome back, {name}!",
+          "subtitle": "Here's your portal overview",
+          "iconClass": "\u2601"
+        }
+      },
+      {
+        "_section": "Usage Stats (4 columns)",
+        "contentType": "UsageStatElement",
+        "property": {
+          "label": "API Calls",
+          "unit": "/ mo",
+          "iconClass": "\u26a1",
+          "maxValue": 50000,
+          "dataKey": "ApiCalls"
+        }
+      },
+      {
+        "_section": "Usage Stats (4 columns)",
+        "contentType": "UsageStatElement",
+        "property": {
+          "label": "Storage",
+          "unit": "GB",
+          "iconClass": "\u2601",
+          "maxValue": 100,
+          "dataKey": "Storage"
+        }
+      },
+      {
+        "_section": "Usage Stats (4 columns)",
+        "contentType": "UsageStatElement",
+        "property": {
+          "label": "Bandwidth",
+          "unit": "GB",
+          "iconClass": "\u2194",
+          "maxValue": 500,
+          "dataKey": "Bandwidth"
+        }
+      },
+      {
+        "_section": "Usage Stats (4 columns)",
+        "contentType": "UsageStatElement",
+        "property": {
+          "label": "Projects",
+          "unit": "active",
+          "iconClass": "\u2630",
+          "maxValue": 25,
+          "dataKey": "Projects"
+        }
+      },
+      {
+        "_section": "Info Cards (3 columns)",
+        "contentType": "InfoCardElement",
+        "property": {
+          "title": "Documentation",
+          "description": "Browse our API docs and integration guides",
+          "iconClass": "\ud83d\udcc4",
+          "linkText": "View Docs"
+        }
+      },
+      {
+        "_section": "Info Cards (3 columns)",
+        "contentType": "InfoCardElement",
+        "property": {
+          "title": "Support",
+          "description": "Contact our support team for help with your account",
+          "iconClass": "\ud83d\udcac",
+          "linkText": "Get Help"
+        }
+      },
+      {
+        "_section": "Info Cards (3 columns)",
+        "contentType": "InfoCardElement",
+        "property": {
+          "title": "System Status",
+          "description": "Check current system health and uptime statistics",
+          "iconClass": "\u2705",
+          "linkText": "View Status"
+        }
+      },
+      {
+        "_section": "Announcement (full width)",
+        "contentType": "AnnouncementElement",
+        "property": {
+          "title": "Scheduled Maintenance",
+          "body": "System maintenance is scheduled for March 1st, 2026 from 02:00-04:00 UTC. Brief downtime is expected.",
+          "severity": "info",
+          "iconClass": "\u2139"
+        }
+      }
+    ],
+
+    "account_elements": [
+      {
+        "_section": "Account Details (2x2 grid)",
+        "contentType": "AccountDetailElement",
+        "property": {
+          "label": "Email",
+          "iconClass": "\u2709",
+          "displayFormat": "",
+          "dataKey": "Email"
+        }
+      },
+      {
+        "_section": "Account Details (2x2 grid)",
+        "contentType": "AccountDetailElement",
+        "property": {
+          "label": "Plan",
+          "iconClass": "\u2605",
+          "displayFormat": "",
+          "dataKey": "Plan"
+        }
+      },
+      {
+        "_section": "Account Details (2x2 grid)",
+        "contentType": "AccountDetailElement",
+        "property": {
+          "label": "Display Name",
+          "iconClass": "\u263a",
+          "displayFormat": "",
+          "dataKey": "DisplayName"
+        }
+      },
+      {
+        "_section": "Account Details (2x2 grid)",
+        "contentType": "AccountDetailElement",
+        "property": {
+          "label": "Member Since",
+          "iconClass": "\u270e",
+          "displayFormat": "",
+          "dataKey": "MemberSince"
+        }
+      },
+      {
+        "_section": "Announcement (full width)",
+        "contentType": "AnnouncementElement",
+        "property": {
+          "title": "Two-Factor Authentication",
+          "body": "Enable 2FA for enhanced account security. Go to Security Settings to set it up.",
+          "severity": "warning",
+          "iconClass": "\u26a0"
+        }
+      }
+    ],
+
+    "billing_elements": [
+      {
+        "_section": "Billing History (full width)",
+        "contentType": "BillingHistoryElement",
+        "property": {
+          "title": "Billing History",
+          "dateHeader": "Date",
+          "descriptionHeader": "Description",
+          "amountHeader": "Amount",
+          "statusHeader": "Status",
+          "emptyMessage": "No billing history available."
+        }
+      },
+      {
+        "_section": "Payment Info (full width)",
+        "contentType": "InfoCardElement",
+        "property": {
+          "title": "Payment Methods",
+          "description": "Manage your credit cards and payment options",
+          "iconClass": "\ud83d\udcb3",
+          "linkText": "Manage Payments"
+        }
+      }
+    ]
+  }
+}

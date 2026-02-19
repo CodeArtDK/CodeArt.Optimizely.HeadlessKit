@@ -1,0 +1,24 @@
+@if (Node is CompositionStructureNode structureNode)
+{
+    <div class="composition-@(structureNode.NodeType ?? "section")" data-key="@structureNode.Key">
+        @if (structureNode.Nodes != null)
+        {
+            @foreach (var child in structureNode.Nodes)
+            {
+                <CompositionNode Node="child" User="User" />
+            }
+        }
+    </div>
+}
+else if (Node is CompositionComponentNode componentNode && componentNode.Component != null)
+{
+    <ElementRenderer Content="componentNode.Component" User="User" />
+}
+
+@code {
+    [Parameter]
+    public ICompositionNode? Node { get; set; }
+
+    [Parameter]
+    public PortalUser? User { get; set; }
+}

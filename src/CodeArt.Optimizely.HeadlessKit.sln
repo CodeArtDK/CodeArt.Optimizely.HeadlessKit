@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeadlessKit.Sample.Mvc", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeArt.Optimizely.HeadlessKit.Tests", "..\test\CodeArt.Optimizely.HeadlessKit.Tests\CodeArt.Optimizely.HeadlessKit.Tests.csproj", "{B3000003-0000-0000-0000-000000000003}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeadlessKit.Sample.Blazor", "..\samples\HeadlessKit.Sample.Blazor\HeadlessKit.Sample.Blazor.csproj", "{B5000005-0000-0000-0000-000000000005}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,11 +41,16 @@ Global
 		{B3000003-0000-0000-0000-000000000003}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3000003-0000-0000-0000-000000000003}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3000003-0000-0000-0000-000000000003}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5000005-0000-0000-0000-000000000005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5000005-0000-0000-0000-000000000005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5000005-0000-0000-0000-000000000005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5000005-0000-0000-0000-000000000005}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B1000001-0000-0000-0000-000000000001} = {A1B2C3D4-0001-0001-0001-000000000001}
 		{B2000002-0000-0000-0000-000000000002} = {A1B2C3D4-0002-0002-0002-000000000002}
 		{B4000004-0000-0000-0000-000000000004} = {A1B2C3D4-0002-0002-0002-000000000002}
 		{B3000003-0000-0000-0000-000000000003} = {A1B2C3D4-0003-0003-0003-000000000003}
+		{B5000005-0000-0000-0000-000000000005} = {A1B2C3D4-0002-0002-0002-000000000002}
 	EndGlobalSection
 EndGlobal

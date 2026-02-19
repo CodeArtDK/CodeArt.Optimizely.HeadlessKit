@@ -1,0 +1,88 @@
+@page "/"
+@layout EmptyLayout
+@attribute [AllowAnonymous]
+@inject ContentGraphClient GraphClient
+
+@if (_loading)
+{
+    <div class="cms-loading">Loading...</div>
+}
+else if (_dashboard != null)
+{
+    <div class="welcome-page">
+        <header class="welcome-hero">
+            <span class="welcome-logo">&#9729;</span>
+            <h1>@(_dashboard.PortalName ?? "CloudPulse")</h1>
+            @if (!string.IsNullOrEmpty(_dashboard.SupportEmail))
+            {
+                <p class="welcome-support">Support: @_dashboard.SupportEmail</p>
+            }
+        </header>
+
+        @if (_dashboard.Composition?.Nodes != null)
+        {
+            <div class="welcome-content">
+                <CompositionRenderer Nodes="_dashboard.Composition.Nodes" User="null" />
+            </div>
+        }
+
+        <div class="welcome-cta">
+            <a href="/login" class="welcome-signin-button">Sign in to your portal</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="welcome-page">
+        <header class="welcome-hero">
+            <span class="welcome-logo">&#9729;</span>
+            <h1>CloudPulse</h1>
+            <p>Your cloud services portal</p>
+        </header>
+
+        <div class="welcome-features">
+            <div class="welcome-feature-card">
+                <span class="welcome-feature-icon">&#9889;</span>
+                <h3>Usage Analytics</h3>
+                <p>Monitor your API calls, storage, and bandwidth in real time.</p>
+            </div>
+            <div class="welcome-feature-card">
+                <span class="welcome-feature-icon">&#9881;</span>
+                <h3>Account Management</h3>
+                <p>Manage your profile, security settings, and preferences.</p>
+            </div>
+            <div class="welcome-feature-card">
+                <span class="welcome-feature-icon">&#9993;</span>
+                <h3>Billing &amp; Invoices</h3>
+                <p>View your billing history and manage payment methods.</p>
+            </div>
+        </div>
+
+        <div class="welcome-cta">
+            <a href="/login" class="welcome-signin-button">Sign in to your portal</a>
+        </div>
+
+        <div class="welcome-hint">
+            Demo credentials: <strong>demo</strong> / <strong>demo123</strong>
+        </div>
+    </div>
+}
+
+@code {
+    private PortalDashboard? _dashboard;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _dashboard = await GraphClient.GetContentByPath<PortalDashboard>("/");
+        }
+        catch
+        {
+            _dashboard = null;
+        }
+
+        _loading = false;
+    }
+}

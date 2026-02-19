@@ -1,0 +1,23 @@
+<div class="announcement announcement-@(Element?.Severity?.ToLowerInvariant() ?? "info")">
+    @if (!string.IsNullOrEmpty(Element?.IconClass))
+    {
+        <span class="announcement-icon">@Element.IconClass</span>
+    }
+    <div class="announcement-content">
+        <strong>@(Element?.Title ?? "Notice")</strong>
+        @if (!string.IsNullOrEmpty(Element?.Body))
+        {
+            <p>@Element.Body</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IGraphContent? Content { get; set; }
+
+    [Parameter]
+    public PortalUser? User { get; set; }
+
+    private AnnouncementElement? Element => Content as AnnouncementElement;
+}

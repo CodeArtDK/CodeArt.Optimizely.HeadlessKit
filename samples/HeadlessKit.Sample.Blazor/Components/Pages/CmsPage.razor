@@ -1,0 +1,196 @@
+@page "/{**Path}"
+@attribute [Authorize]
+@inject ContentGraphClient GraphClient
+@inject PortalUserService UserService
+@inject AuthenticationStateProvider AuthStateProvider
+
+@if (_loading)
+{
+    <div class="cms-loading">Loading...</div>
+}
+else if (_experience != null)
+{
+    <div class="cms-page">
+        @if (_experience is PortalDashboard dashboard)
+        {
+            <header class="page-header">
+                <h1>@(dashboard.PortalName ?? "Dashboard")</h1>
+                @if (!string.IsNullOrEmpty(dashboard.SupportEmail))
+                {
+                    <p class="support-info">Support: @dashboard.SupportEmail</p>
+                }
+            </header>
+        }
+        else if (_experience is PortalPage portalPage)
+        {
+            <header class="page-header">
+                <h1>@(portalPage.PageTitle ?? "Page")</h1>
+                @if (!string.IsNullOrEmpty(portalPage.PageDescription))
+                {
+                    <p class="page-description">@portalPage.PageDescription</p>
+                }
+            </header>
+        }
+
+        @if (_experience.Composition?.Nodes != null)
+        {
+            <CompositionRenderer Nodes="_experience.Composition.Nodes" User="_user" />
+        }
+    </div>
+}
+else
+{
+    @* Fallback content when CMS pages aren't configured yet *@
+    <div class="cms-page">
+        @if (_currentSection == "portal" || string.IsNullOrEmpty(_currentSection))
+        {
+            <header class="page-header">
+                <h1>CloudPulse Dashboard</h1>
+                <p class="support-info">Support: support@cloudpulse.example.com</p>
+            </header>
+            <div class="fallback-content">
+                @if (_user != null)
+                {
+                    <div class="element-welcome-banner">
+                        <span class="welcome-icon">&#9729;</span>
+                        <h2>Welcome back, @_user.DisplayName!</h2>
+                        <p>Here's your portal overview</p>
+                    </div>
+                    <div class="composition-section" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:1.5rem;">
+                        <div class="element-usage-stat">
+                            <div class="stat-header"><span class="stat-icon">&#9889;</span><span class="stat-label">API Calls</span></div>
+                            <div class="stat-value">@(_user.UsageData.GetValueOrDefault("ApiCalls", 0)) <span class="stat-unit">/ mo</span></div>
+                            <div class="stat-bar"><div class="stat-bar-fill" style="width:@(Math.Min(100, _user.UsageData.GetValueOrDefault("ApiCalls", 0) * 100 / 50000))%"></div></div>
+                        </div>
+                        <div class="element-usage-stat">
+                            <div class="stat-header"><span class="stat-icon">&#9729;</span><span class="stat-label">Storage</span></div>
+                            <div class="stat-value">@(_user.UsageData.GetValueOrDefault("Storage", 0)) <span class="stat-unit">GB</span></div>
+                            <div class="stat-bar"><div class="stat-bar-fill" style="width:@(Math.Min(100, _user.UsageData.GetValueOrDefault("Storage", 0) * 100 / 100))%"></div></div>
+                        </div>
+                        <div class="element-usage-stat">
+                            <div class="stat-header"><span class="stat-icon">&#8596;</span><span class="stat-label">Bandwidth</span></div>
+                            <div class="stat-value">@(_user.UsageData.GetValueOrDefault("Bandwidth", 0)) <span class="stat-unit">GB</span></div>
+                            <div class="stat-bar"><div class="stat-bar-fill" style="width:@(Math.Min(100, _user.UsageData.GetValueOrDefault("Bandwidth", 0) * 100 / 500))%"></div></div>
+                        </div>
+                        <div class="element-usage-stat">
+                            <div class="stat-header"><span class="stat-icon">&#9776;</span><span class="stat-label">Projects</span></div>
+                            <div class="stat-value">@(_user.UsageData.GetValueOrDefault("Projects", 0)) <span class="stat-unit">active</span></div>
+                            <div class="stat-bar"><div class="stat-bar-fill" style="width:@(Math.Min(100, _user.UsageData.GetValueOrDefault("Projects", 0) * 100 / 25))%"></div></div>
+                        </div>
+                    </div>
+                }
+                <div class="cms-setup-notice">
+                    <p><strong>CMS content not configured yet.</strong> This is fallback content rendered directly by the Blazor app.
+                    Once portal pages are created in the CMS and compositions are set up in Visual Builder,
+                    this content will be replaced by CMS-driven content.</p>
+                </div>
+            </div>
+        }
+        else if (_currentSection == "account")
+        {
+            <header class="page-header">
+                <h1>Account Settings</h1>
+                <p class="page-description">View and manage your account details</p>
+            </header>
+            <div class="fallback-content">
+                @if (_user != null)
+                {
+                    <div class="composition-section" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;">
+                        <div class="element-account-detail"><span class="detail-icon">&#9993;</span><span class="detail-label">Email</span><span class="detail-value">@_user.Email</span></div>
+                        <div class="element-account-detail"><span class="detail-icon">&#9733;</span><span class="detail-label">Plan</span><span class="detail-value">@_user.Plan</span></div>
+                        <div class="element-account-detail"><span class="detail-icon">&#9786;</span><span class="detail-label">Display Name</span><span class="detail-value">@_user.DisplayName</span></div>
+                        <div class="element-account-detail"><span class="detail-icon">&#9998;</span><span class="detail-label">Member Since</span><span class="detail-value">@_user.MemberSince</span></div>
+                    </div>
+                }
+                <div class="cms-setup-notice">
+                    <p><strong>CMS content not configured yet.</strong> Create an Account page in the CMS to replace this fallback.</p>
+                </div>
+            </div>
+        }
+        else if (_currentSection == "billing")
+        {
+            <header class="page-header">
+                <h1>Billing &amp; Invoices</h1>
+                <p class="page-description">View your billing history and manage payment methods</p>
+            </header>
+            <div class="fallback-content">
+                @if (_user?.Invoices?.Count > 0)
+                {
+                    <div class="element-billing-history">
+                        <h3>Billing History</h3>
+                        <table class="billing-table">
+                            <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead>
+                            <tbody>
+                                @foreach (var inv in _user.Invoices)
+                                {
+                                    <tr>
+                                        <td>@inv.Date</td>
+                                        <td>@inv.Description</td>
+                                        <td>@inv.Amount</td>
+                                        <td><span class="badge badge-@(inv.Status?.ToLower())">@inv.Status</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                <div class="cms-setup-notice">
+                    <p><strong>CMS content not configured yet.</strong> Create a Billing page in the CMS to replace this fallback.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="cms-not-found">
+                <h2>Page not found</h2>
+                <p>The requested page could not be found in the CMS.</p>
+                <a href="/portal">Return to Dashboard</a>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Path { get; set; }
+
+    private GraphExperience? _experience;
+    private PortalUser? _user;
+    private bool _loading = true;
+    private string _currentSection = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+
+        // Resolve current user
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var username = authState.User.Identity?.Name;
+        if (username != null)
+        {
+            _user = UserService.GetByUsername(username);
+        }
+
+        // Determine the current section for fallback rendering
+        var path = Path?.Trim('/') ?? "";
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        _currentSection = segments.Length > 0 ? segments.Last() : "portal";
+
+        // Fetch CMS content by path
+        var cmsPath = string.IsNullOrEmpty(Path) ? "/portal" : $"/{Path}";
+
+        try
+        {
+            // Try PortalDashboard first, then PortalPage
+            _experience = await GraphClient.GetContentByPath<PortalDashboard>(cmsPath)
+                          ?? (GraphExperience?)await GraphClient.GetContentByPath<PortalPage>(cmsPath);
+        }
+        catch
+        {
+            // If Graph is unavailable, fall through to fallback content
+            _experience = null;
+        }
+
+        _loading = false;
+    }
+}

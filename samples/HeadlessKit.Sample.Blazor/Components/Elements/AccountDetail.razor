@@ -1,0 +1,45 @@
+<div class="account-detail">
+    @if (!string.IsNullOrEmpty(Element?.IconClass))
+    {
+        <span class="detail-icon">@Element.IconClass</span>
+    }
+    <div class="detail-content">
+        <span class="detail-label">@(Element?.Label ?? "Detail")</span>
+        <span class="detail-value">@FormattedValue</span>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IGraphContent? Content { get; set; }
+
+    [Parameter]
+    public PortalUser? User { get; set; }
+
+    private AccountDetailElement? Element => Content as AccountDetailElement;
+
+    private string FormattedValue
+    {
+        get
+        {
+            if (User == null || Element?.DataKey == null) return "—";
+
+            var raw = Element.DataKey switch
+            {
+                "Email" => User.Email,
+                "Plan" => User.Plan,
+                "DisplayName" => User.DisplayName,
+                "MemberSince" => User.MemberSince.ToString("MMMM yyyy"),
+                "Username" => User.Username,
+                _ => null
+            };
+
+            if (raw == null) return "—";
+
+            if (!string.IsNullOrEmpty(Element.DisplayFormat))
+                return Element.DisplayFormat.Replace("{value}", raw);
+
+            return raw;
+        }
+    }
+}

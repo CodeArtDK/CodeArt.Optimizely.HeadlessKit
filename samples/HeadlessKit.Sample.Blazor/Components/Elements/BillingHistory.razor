@@ -1,0 +1,42 @@
+<div class="billing-history">
+    <h3>@(Element?.Title ?? "Billing History")</h3>
+
+    @if (User?.Invoices != null && User.Invoices.Count > 0)
+    {
+        <table class="billing-table">
+            <thead>
+                <tr>
+                    <th>@(Element?.DateHeader ?? "Date")</th>
+                    <th>@(Element?.DescriptionHeader ?? "Description")</th>
+                    <th>@(Element?.AmountHeader ?? "Amount")</th>
+                    <th>@(Element?.StatusHeader ?? "Status")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var invoice in User.Invoices)
+                {
+                    <tr>
+                        <td>@invoice.Date.ToString("MMM dd, yyyy")</td>
+                        <td>@invoice.Description</td>
+                        <td>$@invoice.Amount.ToString("F2")</td>
+                        <td><span class="status-badge status-@invoice.Status.ToLowerInvariant()">@invoice.Status</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="billing-empty">@(Element?.EmptyMessage ?? "No billing history available.")</p>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IGraphContent? Content { get; set; }
+
+    [Parameter]
+    public PortalUser? User { get; set; }
+
+    private BillingHistoryElement? Element => Content as BillingHistoryElement;
+}

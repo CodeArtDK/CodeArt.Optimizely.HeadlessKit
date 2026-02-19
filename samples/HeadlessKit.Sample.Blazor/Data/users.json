@@ -1,0 +1,42 @@
+[
+  {
+    "Username": "demo",
+    "Password": "demo123",
+    "DisplayName": "Alex Morgan",
+    "Email": "alex.morgan@example.com",
+    "Plan": "Professional",
+    "MemberSince": "2024-03-15",
+    "UsageData": {
+      "ApiCalls": 8420,
+      "Storage": 67,
+      "Bandwidth": 234,
+      "Projects": 12
+    },
+    "Invoices": [
+      {
+        "Date": "2026-02-01",
+        "Description": "Professional Plan - February 2026",
+        "Amount": 49.00,
+        "Status": "Paid"
+      },
+      {
+        "Date": "2026-01-01",
+        "Description": "Professional Plan - January 2026",
+        "Amount": 49.00,
+        "Status": "Paid"
+      },
+      {
+        "Date": "2025-12-01",
+        "Description": "Professional Plan - December 2025",
+        "Amount": 49.00,
+        "Status": "Paid"
+      },
+      {
+        "Date": "2025-11-01",
+        "Description": "Professional Plan - November 2025",
+        "Amount": 39.00,
+        "Status": "Paid"
+      }
+    ]
+  }
+]
