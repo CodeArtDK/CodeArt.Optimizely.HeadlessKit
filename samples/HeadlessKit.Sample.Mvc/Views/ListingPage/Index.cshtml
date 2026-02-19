@@ -1,0 +1,16 @@
+@model ListingPage
+@{
+    ViewData["Title"] = Model?.MetaTitle ?? Model?.Heading;
+}
+
+@if (Model != null)
+{
+    @if (!string.IsNullOrEmpty(Model.Heading))
+    {
+        <header class="opti-listing__header">
+            <h1>@Model.Heading</h1>
+        </header>
+    }
+
+    <graph-content-area composition="@Model.Composition" />
+}

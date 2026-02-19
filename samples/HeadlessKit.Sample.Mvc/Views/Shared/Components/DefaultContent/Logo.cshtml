@@ -1,0 +1,28 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.LogoElement
+
+<div class="opti-logo">
+    @if (Model.Link?.Default != null)
+    {
+        <a href="@Model.Link.Default" class="opti-logo__link">
+            @if (Model.Image?.Url?.Default != null)
+            {
+                <img src="@Model.Image.Url.Default" alt="@(Model.Name ?? "")" class="opti-logo__image" />
+            }
+            @if (!string.IsNullOrEmpty(Model.Name))
+            {
+                <span class="opti-logo__name">@Model.Name</span>
+            }
+        </a>
+    }
+    else
+    {
+        @if (Model.Image?.Url?.Default != null)
+        {
+            <img src="@Model.Image.Url.Default" alt="@(Model.Name ?? "")" class="opti-logo__image" />
+        }
+        @if (!string.IsNullOrEmpty(Model.Name))
+        {
+            <span class="opti-logo__name">@Model.Name</span>
+        }
+    }
+</div>

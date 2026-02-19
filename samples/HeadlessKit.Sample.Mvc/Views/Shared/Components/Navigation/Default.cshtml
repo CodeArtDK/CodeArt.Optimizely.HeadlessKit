@@ -1,0 +1,14 @@
+@using CodeArt.Optimizely.HeadlessKit.Core.Models
+@model List<GraphPageContent>
+
+@foreach (var page in Model)
+{
+    var url = page.MetaData?.Url?.Default;
+    var name = page.MetaData?.DisplayName;
+    if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(name))
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@url">@name</a>
+        </li>
+    }
+}

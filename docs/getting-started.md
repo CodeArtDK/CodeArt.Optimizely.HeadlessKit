@@ -61,7 +61,9 @@ Add both `SaaSCMS` and `OptimizelyGraph` sections to `appsettings.json`:
 
 ## 3. Register Services
 
-In `Program.cs`:
+In `Program.cs`, choose either Razor Pages or MVC Controllers:
+
+### Razor Pages Setup
 
 ```csharp
 using CodeArt.Optimizely.HeadlessKit.Mvc;
@@ -96,6 +98,46 @@ app.MapDynamicPageRoute<ContentRouteTransformer>("{**path}");
 app.MapRazorPages();
 
 // Initialize services (TemplateCoordinator, etc.)
+await app.InitializeServicesAsync();
+
+app.Run();
+```
+
+### MVC Controllers Setup
+
+```csharp
+using CodeArt.Optimizely.HeadlessKit.Mvc;
+using CodeArt.Optimizely.HeadlessKit.Mvc.Infrastructure;
+using CodeArt.Optimizely.HeadlessKit.TypeBuilder;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddSaaSCMSTypeBuilder(builder.Configuration);
+builder.Services.AddOptimizelyGraph(builder.Configuration);
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseCmsPreview();
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization();
+
+// Map fixed routes before the content catch-all
+app.MapControllerRoute(name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Map catch-all dynamic route for CMS content (MVC controllers)
+app.MapContentControllerRoute();
+
 await app.InitializeServicesAsync();
 
 app.Run();
@@ -151,7 +193,9 @@ See [Content Types](content-types.md) for the full attribute reference.
 
 ## 5. Create a Page Template
 
-Register a Razor Page as a rendering template for a content type using `[TemplateDescriptor]`:
+Register a rendering template for a content type using `[TemplateDescriptor]`. You can use either Razor Pages or MVC Controllers.
+
+### Razor Page Template
 
 **Pages/StandardPage.cshtml.cs:**
 ```csharp
@@ -173,9 +217,30 @@ public class StandardPageModel : ContentPage<StandardPage> { }
 <graph-content-area composition="@Model.CurrentContent?.Composition" />
 ```
 
+### MVC Controller Template
+
+**Controllers/StandardPageController.cs:**
+```csharp
+using CodeArt.Optimizely.HeadlessKit.Mvc.Attributes;
+using CodeArt.Optimizely.HeadlessKit.Mvc.Controllers;
+
+[TemplateDescriptor(typeof(StandardPage))]
+public class StandardPageController : ContentControllerBase<StandardPage> { }
+```
+
+**Views/StandardPage/Index.cshtml:**
+```html
+@model StandardPage
+@{
+    ViewData["Title"] = Model?.MetaTitle;
+}
+
+<graph-content-area composition="@Model?.Composition" />
+```
+
 ## 6. Register Tag Helpers
 
-Add to `Pages/_ViewImports.cshtml`:
+Add to `Pages/_ViewImports.cshtml` (Razor Pages) or `Views/_ViewImports.cshtml` (MVC):
 
 ```html
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -184,14 +249,14 @@ Add to `Pages/_ViewImports.cshtml`:
 
 ## 7. Import Sample Content (Optional)
 
-To see the sample site in action with real content, import the included content package:
+To see a sample site in action with real content, import the included content package:
 
-1. Run the site once to sync content types to your CMS (the TypeBuilder does this on startup)
+1. Run either sample site once to sync content types to your CMS (the TypeBuilder does this on startup)
 2. In your Optimizely CMS, go to **Settings** > **Import Data**
 3. Upload `meridiandigital.episerverdata` from `samples/HeadlessKit.Sample.RazorPages/ContentPackage/`
 4. Wait a few minutes for the content to appear in Optimizely Graph
 
-See the [ContentPackage README](../samples/HeadlessKit.Sample.RazorPages/ContentPackage/README.md) for details.
+The content package works with both the Razor Pages and MVC sample sites. See the [ContentPackage README](../samples/HeadlessKit.Sample.RazorPages/ContentPackage/README.md) for details.
 
 ## 8. Run
 

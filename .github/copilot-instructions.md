@@ -45,7 +45,13 @@ Controllers: inherit `ContentControllerBase<T>`, annotate with `[TemplateDescrip
 
 ```csharp
 app.UseCmsPreview();
+
+// For Razor Pages:
 app.MapDynamicPageRoute<ContentRouteTransformer>("{**path}");
+
+// Or for MVC Controllers:
+app.MapContentControllerRoute();
+
 await app.InitializeServicesAsync();
 ```
 

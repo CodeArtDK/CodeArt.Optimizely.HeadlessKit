@@ -1,0 +1,10 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.TagElement
+
+@if (Model.TagLink?.Default != null)
+{
+    <a href="@Model.TagLink.Default" class="opti-tag">@Model.TagName</a>
+}
+else
+{
+    <span class="opti-tag">@Model.TagName</span>
+}

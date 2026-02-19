@@ -1,0 +1,18 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.VideoElement
+
+<div class="opti-video">
+    @if (!string.IsNullOrEmpty(Model.Title))
+    {
+        <h3 class="opti-video__title">@Model.Title</h3>
+    }
+    @if (!string.IsNullOrEmpty(Model.VideoUrl))
+    {
+        <div class="opti-video__player">
+            <iframe src="@Model.VideoUrl" title="@(Model.Title ?? "Video")" allowfullscreen loading="lazy"></iframe>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <p class="opti-video__description">@Model.Description</p>
+    }
+</div>

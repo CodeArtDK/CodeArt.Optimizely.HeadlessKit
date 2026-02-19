@@ -1,0 +1,8 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.HtmlBlockElement
+
+<div class="opti-html-block">
+    @if (Model.Body?.Html != null)
+    {
+        @Html.Raw(Model.Body.Html)
+    }
+</div>

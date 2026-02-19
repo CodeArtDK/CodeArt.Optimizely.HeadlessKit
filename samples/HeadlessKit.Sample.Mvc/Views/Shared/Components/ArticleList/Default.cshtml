@@ -1,0 +1,66 @@
+@model List<HeadlessKit.Sample.Mvc.Models.Experiences.ArticlePage>
+
+@{
+    var heading = ViewBag.Heading as string;
+}
+
+<div class="opti-article-list">
+    @if (!string.IsNullOrWhiteSpace(heading))
+    {
+        <h2 class="opti-article-list__heading">@heading</h2>
+    }
+
+    @if (Model.Any())
+    {
+        <div class="opti-article-list__grid">
+            @foreach (var article in Model)
+            {
+                <article class="opti-article-card">
+                    @if (article.FeaturedImage?.Url?.Default != null)
+                    {
+                        <img src="@article.FeaturedImage.Url.Default" alt="@article.Title" class="opti-article-card__image" />
+                    }
+                    <div class="opti-article-card__body">
+                        <div class="opti-article-card__meta">
+                            @if (article.PublishedDate != default)
+                            {
+                                <time datetime="@article.PublishedDate.ToString("yyyy-MM-dd")">@article.PublishedDate.ToString("MMM dd, yyyy")</time>
+                            }
+                            @if (!string.IsNullOrEmpty(article.AuthorName))
+                            {
+                                <span class="opti-article-card__author">@article.AuthorName</span>
+                            }
+                        </div>
+                        <h3 class="opti-article-card__title">
+                            @if (article.MetaData?.Url?.Default != null)
+                            {
+                                <a href="@article.MetaData.Url.Default">@article.Title</a>
+                            }
+                            else
+                            {
+                                @article.Title
+                            }
+                        </h3>
+                        @if (!string.IsNullOrEmpty(article.Excerpt))
+                        {
+                            <p class="opti-article-card__excerpt">@article.Excerpt</p>
+                        }
+                        @if (article.Tags?.Any() == true)
+                        {
+                            <div class="opti-article-card__tags">
+                                @foreach (var tag in article.Tags)
+                                {
+                                    <span class="opti-article-card__tag">@tag</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </article>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">No articles found.</p>
+    }
+</div>

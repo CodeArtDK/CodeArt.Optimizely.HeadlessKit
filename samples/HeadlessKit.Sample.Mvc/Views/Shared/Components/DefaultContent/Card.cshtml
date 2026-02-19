@@ -1,0 +1,25 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.CardElement
+
+<div class="opti-card">
+    @if (Model.Image?.Url?.Default != null)
+    {
+        <img src="@Model.Image.Url.Default" alt="@Model.Title" class="opti-card__image" />
+    }
+    else if (!string.IsNullOrEmpty(Model.IconClass))
+    {
+        <div class="opti-card__icon">
+            <i class="@Model.IconClass"></i>
+        </div>
+    }
+    <div class="opti-card__body">
+        <h3 class="opti-card__title">@Model.Title</h3>
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <p class="opti-card__description">@Model.Description</p>
+        }
+        @if (!string.IsNullOrEmpty(Model.LinkText) && Model.Link?.Default != null)
+        {
+            <a href="@Model.Link.Default" class="opti-card__link">@Model.LinkText</a>
+        }
+    </div>
+</div>

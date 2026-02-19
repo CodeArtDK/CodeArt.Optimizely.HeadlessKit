@@ -1,0 +1,57 @@
+@model ArticlePage
+@{
+    ViewData["Title"] = Model?.MetaTitle ?? Model?.Title;
+}
+
+@if (Model != null)
+{
+    <article class="opti-article">
+        <header class="opti-article__header">
+            @if (Model.FeaturedImage?.Url?.Default != null)
+            {
+                <img src="@Model.FeaturedImage.Url.Default" alt="@Model.Title" class="opti-article__featured-image" />
+            }
+            <h1 class="opti-article__title">@Model.Title</h1>
+            <div class="opti-article__meta">
+                @if (Model.PublishedDate != default)
+                {
+                    <time datetime="@Model.PublishedDate.ToString("yyyy-MM-dd")">
+                        @Model.PublishedDate.ToString("MMMM dd, yyyy")
+                    </time>
+                }
+                @if (!string.IsNullOrEmpty(Model.AuthorName))
+                {
+                    <span class="opti-article__author">
+                        @if (Model.AuthorPhoto?.Url?.Default != null)
+                        {
+                            <img src="@Model.AuthorPhoto.Url.Default" alt="@Model.AuthorName" class="opti-article__author-photo" />
+                        }
+                        <span>@Model.AuthorName</span>
+                        @if (!string.IsNullOrEmpty(Model.AuthorRole))
+                        {
+                            <span class="opti-article__author-role">@Model.AuthorRole</span>
+                        }
+                    </span>
+                }
+            </div>
+            @if (Model.Tags?.Any() == true)
+            {
+                <div class="opti-article__tags">
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <span class="opti-tag">@tag</span>
+                    }
+                </div>
+            }
+        </header>
+
+        @if (Model.Body?.Html != null)
+        {
+            <div class="opti-article__body">
+                @Html.Raw(Model.Body.Html)
+            </div>
+        }
+    </article>
+
+    <graph-content-area composition="@Model.Composition" />
+}

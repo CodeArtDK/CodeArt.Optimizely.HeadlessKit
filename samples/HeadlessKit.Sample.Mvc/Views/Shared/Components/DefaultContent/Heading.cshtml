@@ -1,0 +1,22 @@
+@model HeadlessKit.Sample.Mvc.Models.Elements.HeadingElement
+
+@{
+    var level = Model.Level ?? "h2";
+}
+
+@if (level == "h1")
+{
+    <h1 class="opti-heading opti-heading--h1">@Model.Text</h1>
+}
+else if (level == "h3")
+{
+    <h3 class="opti-heading opti-heading--h3">@Model.Text</h3>
+}
+else if (level == "h4")
+{
+    <h4 class="opti-heading opti-heading--h4">@Model.Text</h4>
+}
+else
+{
+    <h2 class="opti-heading opti-heading--h2">@Model.Text</h2>
+}

@@ -22,7 +22,11 @@ The content package contains a complete "Meridian Digital" demo site with pages,
 
 ## After Import
 
-Once imported, the content should be available shortly. Run the sample site and navigate to the imported pages to see them rendered with the composition-based templates.
+Once imported, the content should be available shortly. Run either sample site and navigate to the imported pages to see them rendered with the composition-based templates.
+
+This content package works with both sample sites:
+- **Razor Pages** -- `samples/HeadlessKit.Sample.RazorPages/`
+- **MVC** -- `samples/HeadlessKit.Sample.Mvc/`
 
 If content appears but isn't rendering correctly:
 - Verify that display templates were synced (check startup logs for sync report)
