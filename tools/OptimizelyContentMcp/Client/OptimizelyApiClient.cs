@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace OptimizelyContentMcp.Client;
 
@@ -7,8 +8,11 @@ namespace OptimizelyContentMcp.Client;
 /// Generic HTTP client for the Optimizely SaaS CMS REST API.
 /// Returns pretty-printed JSON on success or "ERROR {statusCode}: {body}" on failure.
 /// </summary>
-public sealed class OptimizelyApiClient
+public sealed partial class OptimizelyApiClient
 {
+    // Matches a GUID with dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+    [GeneratedRegex(@"\b([0-9a-fA-F]{8})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{12})\b")]
+    private static partial Regex GuidWithDashesRegex();
     private readonly HttpClient _httpClient;
     private readonly OAuth2TokenManager _tokenManager;
     private readonly string _baseUrl;
@@ -76,7 +80,10 @@ public sealed class OptimizelyApiClient
 
     private string BuildUrl(string path)
     {
-        return $"{_baseUrl}/{_apiVersion}/{path}";
+        // The Optimizely SaaS CMS API requires GUIDs without dashes (format "N").
+        // Callers may pass GUIDs with dashes, so strip them from the path.
+        var normalizedPath = GuidWithDashesRegex().Replace(path, "$1$2$3$4$5");
+        return $"{_baseUrl}/{_apiVersion}/{normalizedPath}";
     }
 
     private static string PrettyPrintJson(string json)
