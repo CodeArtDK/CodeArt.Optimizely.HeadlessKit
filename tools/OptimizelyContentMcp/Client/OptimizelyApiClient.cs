@@ -19,6 +19,7 @@ public sealed class OptimizelyApiClient
     public OptimizelyApiClient(HttpClient httpClient, OAuth2TokenManager tokenManager)
     {
         _httpClient = httpClient;
+        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("OptimizelyContentMcp/1.0");
         _tokenManager = tokenManager;
         _baseUrl = (Environment.GetEnvironmentVariable("OPTIMIZELY_API_BASE_URL") ?? "https://api.cms.optimizely.com/")
             .TrimEnd('/');
@@ -75,11 +76,7 @@ public sealed class OptimizelyApiClient
 
     private string BuildUrl(string path)
     {
-        // Experimental paths are passed through as-is; stable paths get version prefix
-        if (path.StartsWith("experimental/", StringComparison.OrdinalIgnoreCase))
-            return $"{_baseUrl}/api/{path}";
-
-        return $"{_baseUrl}/api/{_apiVersion}/{path}";
+        return $"{_baseUrl}/{_apiVersion}/{path}";
     }
 
     private static string PrettyPrintJson(string json)

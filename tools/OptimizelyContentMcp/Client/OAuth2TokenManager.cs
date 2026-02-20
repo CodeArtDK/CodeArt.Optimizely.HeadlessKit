@@ -25,7 +25,8 @@ public sealed class OAuth2TokenManager
             ?? throw new InvalidOperationException("OPTIMIZELY_CLIENT_ID environment variable is required.");
         _clientSecret = Environment.GetEnvironmentVariable("OPTIMIZELY_CLIENT_SECRET")
             ?? throw new InvalidOperationException("OPTIMIZELY_CLIENT_SECRET environment variable is required.");
-        _tokenEndpoint = "https://login.optimizely.com/oauth2/token";
+        _tokenEndpoint = (Environment.GetEnvironmentVariable("OPTIMIZELY_API_BASE_URL") ?? "https://api.cms.optimizely.com/")
+            .TrimEnd('/') + "/oauth/token";
         _httpClient = httpClientFactory.CreateClient("OAuth2");
     }
 
