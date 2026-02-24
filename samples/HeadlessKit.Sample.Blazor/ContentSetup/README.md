@@ -12,155 +12,80 @@ This guide explains how to create the portal content tree in Optimizely CMS for 
 
 2. You need CMS editor/admin access to create content items and set up compositions.
 
+## Content Specification
+
+`content-items.json` is the canonical specification of all content that must be created.
+It is a JSON array where each entry describes one content item:
+
+| Field | Description |
+|-------|-------------|
+| `contentType` | The CMS content type key |
+| `displayName` | The item's display name in the CMS |
+| `locale` | Language locale (`en`) |
+| `container` | Key of the parent container (see placeholders below) |
+| `routeSegment` | URL segment (empty string = root `/`) |
+| `properties` | Property values for the content type |
+| `composition.sections` | Visual Builder sections with element instances |
+
+### Placeholder values to replace
+
+| Placeholder | Replace with |
+|-------------|--------------|
+| `ROOT_CONTAINER_KEY` | The key of your root site container in the CMS |
+| `PORTAL_DASHBOARD_CONTENT_KEY` | The key of the **CloudPulse Portal** dashboard after creating it |
+
 ## Content Tree Structure
 
 ```
 Root Container
-├── Meridian Digital (LandingPage)         ← existing demo site
-│   ├── Services, About Us, etc.
-├── CloudPulse Welcome (PortalDashboard)   ← NEW, routeSegment: "" (start page, CMS URL = /)
-└── CloudPulse Portal (PortalDashboard)    ← NEW, routeSegment: "portal"
-    ├── Account (PortalPage)               ← routeSegment: "account"
-    └── Billing (PortalPage)               ← routeSegment: "billing"
+├── CloudPulse Welcome (PortalDashboard)   ← routeSegment: "" (CMS URL = /)
+└── CloudPulse Portal (PortalDashboard)    ← routeSegment: "portal" (CMS URL = /portal)
+    ├── Account (PortalPage)               ← routeSegment: "account" (CMS URL = /portal/account)
+    └── Billing (PortalPage)               ← routeSegment: "billing" (CMS URL = /portal/billing)
 ```
 
-## API Content Creation
+## Visual Builder Setup
 
-If you have content management API permissions, use the JSON payloads in `content-items.json`.
+Use the content specification in `content-items.json` as the authoritative reference for property values and composition layouts. The steps below describe the creation workflow.
 
-```bash
-# Get a token
-TOKEN=$(curl -s -X POST "https://api.cms.optimizely.com/oauth/token" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_SECRET" \
-  | jq -r '.access_token')
-
-# Create dashboard (replace CONTAINER with your root container key)
-curl -X POST "https://api.cms.optimizely.com/preview3/experimental/content" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d @content-items.json
-```
-
-> **Note:** The `preview3/experimental/content` endpoint requires content-level write
-> permissions on the target container. The API client may only have type-management
-> permissions. If you get 403, create content through the CMS UI instead.
-
-## Visual Builder Setup (Recommended)
-
-### Step 0: Create the Start Page (public welcome)
+### Step 1: Create the Start Page (public welcome)
 
 1. Open the CMS Visual Builder
-2. Create a new **PortalDashboard** experience under the root (sibling to "Meridian Digital")
-3. Set:
-   - **Display Name**: `CloudPulse Welcome`
-   - **Route Segment**: *(leave empty)* — this makes its CMS URL `/`
-   - **Portal Name**: `CloudPulse`
-   - **Support Email**: `support@cloudpulse.example.com`
+2. Create a new **PortalDashboard** experience directly under the root container
+3. Use the properties from `content-items.json` → first item (`displayName: "CloudPulse Welcome"`)
+4. Set **Route Segment** to empty — this makes its CMS URL `/`
+5. Optionally add composition elements (see `composition.sections` in the JSON)
 
-4. Optionally add a composition with public-facing elements (e.g. InfoCards, Announcements).
-   User-specific elements (UsageStat, AccountDetail, BillingHistory) will render without data
-   since this is a public page with no logged-in user.
+> This page is shown at `/` before login with no sidebar. If no CMS content exists at `/`, a built-in fallback welcome page is shown.
 
-> This page is shown at `/` before login. The Blazor app renders it with `[AllowAnonymous]`
-> and no sidebar. If no CMS content exists at `/`, a built-in fallback welcome page is shown.
+### Step 2: Create the Dashboard page
 
-### Step 1: Create the Dashboard page
+1. Create a new **PortalDashboard** experience directly under the root container (sibling to the start page)
+2. Use the properties from `content-items.json` → second item (`displayName: "CloudPulse Portal"`)
+3. Set **Route Segment** to `portal`
+4. In the Visual Builder composition editor, add the sections and elements from `composition.sections` in the JSON
 
-1. Open the CMS Visual Builder
-2. Create a new **PortalDashboard** experience under the root (sibling to "Meridian Digital")
-3. Set:
-   - **Display Name**: `CloudPulse Portal`
-   - **Route Segment**: `portal`
-   - **Portal Name**: `CloudPulse`
-   - **Support Email**: `support@cloudpulse.example.com`
+### Step 3: Create the Account page
 
-4. Add a composition with these elements:
+1. Create a new **PortalPage** experience under the **CloudPulse Portal** dashboard
+2. Use the properties from `content-items.json` → third item (`displayName: "Account"`)
+3. Set **Route Segment** to `account`
+4. Add composition sections and elements as specified in the JSON
 
-   **Section 1 - Welcome Banner (full width):**
-   | Element Type | Property | Value |
-   |---|---|---|
-   | WelcomeBannerElement | Greeting Template | `Welcome back, {name}!` |
-   | | Subtitle | `Here's your portal overview` |
-   | | Icon Class | `☁` |
+### Step 4: Create the Billing page
 
-   **Section 2 - Usage Stats (4 columns):**
-   | Element Type | Label | Unit | Icon Class | Max Value | Data Key |
-   |---|---|---|---|---|---|
-   | UsageStatElement | API Calls | / mo | ⚡ | 50000 | `ApiCalls` |
-   | UsageStatElement | Storage | GB | ☁ | 100 | `Storage` |
-   | UsageStatElement | Bandwidth | GB | ↔ | 500 | `Bandwidth` |
-   | UsageStatElement | Projects | active | ☰ | 25 | `Projects` |
+1. Create a new **PortalPage** experience under the **CloudPulse Portal** dashboard
+2. Use the properties from `content-items.json` → fourth item (`displayName: "Billing"`)
+3. Set **Route Segment** to `billing`
+4. Add composition sections and elements as specified in the JSON
 
-   **Section 3 - Info Cards (3 columns):**
-   | Element Type | Title | Description | Icon Class | Link Text |
-   |---|---|---|---|---|
-   | InfoCardElement | Documentation | Browse our API docs and guides | 📄 | View Docs |
-   | InfoCardElement | Support | Contact our team for help | 💬 | Get Help |
-   | InfoCardElement | Status | Check system health and uptime | ✅ | View Status |
+### Step 5: Publish all pages
 
-   **Section 4 - Announcement (full width):**
-   | Element Type | Title | Body | Severity | Icon Class |
-   |---|---|---|---|---|
-   | AnnouncementElement | System Update | Scheduled maintenance on March 1st, 2026 from 02:00-04:00 UTC. | info | ℹ |
-
-### Step 2: Create the Account page
-
-1. Create a new **PortalPage** experience under the CloudPulse Portal dashboard
-2. Set:
-   - **Display Name**: `Account`
-   - **Route Segment**: `account`
-   - **Page Title**: `Account Settings`
-   - **Page Description**: `View and manage your account details`
-
-3. Add a composition with these elements:
-
-   **Section 1 - Account Details (2x2 grid):**
-   | Element Type | Label | Icon Class | Display Format | Data Key |
-   |---|---|---|---|---|
-   | AccountDetailElement | Email | ✉ | | `Email` |
-   | AccountDetailElement | Plan | ★ | | `Plan` |
-   | AccountDetailElement | Display Name | ☺ | | `DisplayName` |
-   | AccountDetailElement | Member Since | ✎ | | `MemberSince` |
-
-   **Section 2 - Announcement (full width):**
-   | Element Type | Title | Body | Severity | Icon Class |
-   |---|---|---|---|---|
-   | AnnouncementElement | Two-Factor Auth | Enable 2FA for enhanced account security. | warning | ⚠ |
-
-### Step 3: Create the Billing page
-
-1. Create a new **PortalPage** experience under the CloudPulse Portal dashboard
-2. Set:
-   - **Display Name**: `Billing`
-   - **Route Segment**: `billing`
-   - **Page Title**: `Billing & Invoices`
-   - **Page Description**: `View your billing history and manage payment methods`
-
-3. Add a composition with these elements:
-
-   **Section 1 - Billing History (full width):**
-   | Element Type | Property | Value |
-   |---|---|---|
-   | BillingHistoryElement | Title | `Billing History` |
-   | | Date Header | `Date` |
-   | | Description Header | `Description` |
-   | | Amount Header | `Amount` |
-   | | Status Header | `Status` |
-   | | Empty Message | `No billing history available.` |
-
-   **Section 2 - Info Card (full width):**
-   | Element Type | Title | Description | Icon Class | Link Text |
-   |---|---|---|---|---|
-   | InfoCardElement | Payment Methods | Manage your credit cards and payment options | 💳 | Manage Payments |
-
-### Step 4: Publish all pages
-
-Publish all three pages (Dashboard, Account, Billing). Content may take a few minutes to appear in Optimizely Graph.
+Publish all four pages. Content may take a few minutes to appear in Optimizely Graph.
 
 ## Data Keys Reference
 
-The portal elements use `DataKey` properties to look up user-specific data from `users.json`:
+The portal elements use `DataKey` properties to look up user-specific data from `Data/users.json`:
 
 ### UsageStatElement DataKeys
 | DataKey | Source | Demo Value |
@@ -176,10 +101,11 @@ The portal elements use `DataKey` properties to look up user-specific data from 
 | `Email` | `user.Email` | alex.morgan@example.com |
 | `Plan` | `user.Plan` | Professional |
 | `DisplayName` | `user.DisplayName` | Alex Morgan |
-| `MemberSince` | `user.MemberSince` (formatted) | March 2024 |
+| `MemberSince` | `user.MemberSince` (formatted as "MMMM yyyy") | March 2024 |
 | `Username` | `user.Username` | demo |
 
 ## Demo Login
 
 - **Username**: `demo`
 - **Password**: `demo123`
+
