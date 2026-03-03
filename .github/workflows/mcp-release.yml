@@ -1,0 +1,133 @@
+name: MCP Server Release
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+    paths:
+      - 'tools/OptimizelyContentMcp/**'
+
+  workflow_dispatch:
+    inputs:
+      version_override:
+        description: 'Version override (e.g. 1.2.0). Leave empty for auto-generated version.'
+        required: false
+
+env:
+  PROJECT_PATH: tools/OptimizelyContentMcp/OptimizelyContentMcp.csproj
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        include:
+          - rid: win-x64
+            artifact_name: optimizely-cms-mcp-win-x64
+            extension: .exe
+          - rid: linux-x64
+            artifact_name: optimizely-cms-mcp-linux-x64
+            extension: ''
+          - rid: osx-x64
+            artifact_name: optimizely-cms-mcp-osx-x64
+            extension: ''
+          - rid: osx-arm64
+            artifact_name: optimizely-cms-mcp-osx-arm64
+            extension: ''
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref || github.ref }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version_override }}" ]; then
+            echo "version=${{ github.event.inputs.version_override }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish self-contained executable
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:Version=${{ steps.version.outputs.version }} \
+            -o ./publish/${{ matrix.rid }}
+
+      - name: Package artifact
+        run: |
+          cd ./publish/${{ matrix.rid }}
+          cp ../../tools/OptimizelyContentMcp/README.md ./README.md
+          cp ../../tools/OptimizelyContentMcp/SKILL.md ./SKILL.md
+          zip -r ../../${{ matrix.artifact_name }}.zip .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_name }}.zip
+          retention-days: 7
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+  create-release:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mcp-v${{ needs.release.outputs.version }}
+          name: Optimizely CMS MCP Server v${{ needs.release.outputs.version }}
+          body: |
+            ## Optimizely CMS MCP Server v${{ needs.release.outputs.version }}
+
+            Model Context Protocol (MCP) server for managing Optimizely CMS (SaaS) content from AI assistants like Claude.
+
+            ### Downloads
+
+            | Platform | File |
+            |----------|------|
+            | Windows x64 | `optimizely-cms-mcp-win-x64.zip` |
+            | Linux x64 | `optimizely-cms-mcp-linux-x64.zip` |
+            | macOS x64 (Intel) | `optimizely-cms-mcp-osx-x64.zip` |
+            | macOS ARM64 (Apple Silicon) | `optimizely-cms-mcp-osx-arm64.zip` |
+
+            Each zip contains:
+            - The self-contained executable (no .NET runtime required)
+            - `README.md` — setup instructions for Claude Desktop & Claude Code
+            - `SKILL.md` — AI skill guide for using the MCP tools
+
+            ### Setup
+
+            See the included `README.md` or the [MCP Server documentation](tools/OptimizelyContentMcp/README.md) for configuration instructions.
+          draft: false
+          prerelease: false
+          files: |
+            ./artifacts/**/*.zip

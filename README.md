@@ -114,6 +114,28 @@ dotnet run --project samples/HeadlessKit.Sample.Mvc/HeadlessKit.Sample.Mvc.cspro
 
 > **Note:** You need valid Optimizely CMS SaaS credentials configured via user secrets or `appsettings.json`.
 
+## MCP Server for AI Assistants
+
+The **Optimizely CMS MCP Server** lets AI assistants (Claude, Copilot, etc.) manage your CMS content directly — create pages, define content types, build Visual Builder experiences, handle versions, and more through natural language.
+
+Download the latest self-contained executable from [GitHub Releases](https://github.com/CodeArtDK/CodeArt.Optimizely.HeadlessKit/releases) (no .NET runtime required), then configure your AI client:
+
+```json
+{
+  "mcpServers": {
+    "optimizely-cms": {
+      "command": "/path/to/OptimizelyContentMcp",
+      "env": {
+        "OPTIMIZELY_CLIENT_ID": "<your-client-id>",
+        "OPTIMIZELY_CLIENT_SECRET": "<your-client-secret>"
+      }
+    }
+  }
+}
+```
+
+> See the full [MCP Server README](tools/OptimizelyContentMcp/README.md) for setup instructions for Claude Desktop, Claude Code, and VS Code. The included [SKILL.md](tools/OptimizelyContentMcp/SKILL.md) teaches AI assistants how to use the tools effectively.
+
 ## Documentation
 
 - [Getting Started](docs/getting-started.md) -- Full setup guide
@@ -126,6 +148,7 @@ dotnet run --project samples/HeadlessKit.Sample.Mvc/HeadlessKit.Sample.Mvc.cspro
 
 - [Using HeadlessKit](docs/ai-instructions/using-headlesskit.md) -- For AI coding assistants helping developers
 - [Optimizely SaaS API](docs/ai-instructions/optimizely-saas-content-api.md) -- For AI assistants calling CMS APIs directly
+- [MCP Server Skill Guide](tools/OptimizelyContentMcp/SKILL.md) -- For AI assistants using the MCP server tools
 
 ## Building
 
