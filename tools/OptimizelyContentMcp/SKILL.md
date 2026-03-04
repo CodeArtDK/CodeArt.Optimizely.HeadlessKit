@@ -132,6 +132,35 @@ create_content(body={
 })
 ```
 
+> **Tip:** Use `"status": "published"` to create and publish in one step. Use `"status": "draft"` to create without publishing.
+
+### Creating an Experience Page (without sections)
+
+For experience types that only have properties and no initial composition elements, provide an empty composition:
+
+```
+create_content(body={
+  "contentType": "StartPage",
+  "container": "<parent-guid>",
+  "locale": "en",
+  "displayName": "Start Page",
+  "status": "published",
+  "routeSegment": "start",
+  "composition": {
+    "displayName": "Start Page",
+    "nodeType": "experience",
+    "layoutType": "outline",
+    "nodes": []
+  },
+  "properties": {
+    "MetaTitle": "Welcome to our site",
+    "MetaDescription": "The official start page of our website"
+  }
+})
+```
+
+> **Important:** Experience types (`baseType: "_experience"`) require a `composition` object even when empty. The root node must have `"nodeType": "experience"` and `"layoutType": "outline"`.
+
 ### Creating a Visual Builder Experience (Full Page with Sections & Elements)
 
 This is the most complex operation. Here's the complete pattern:
@@ -251,11 +280,17 @@ Place multiple components in the same column:
 
 ### Finding the root / parent content
 
-There is no universal root GUID. To find where to place content:
+The root container GUID is instance-specific. There is no universal root GUID, and common zero-GUIDs like `00000000-0000-0000-0000-000000000000` will return 404.
 
-1. **If you know a page's GUID**, list its children: `list_content_children(key="<guid>")`
-2. **If you have a GUID from a previous creation**, use that as the `container` for child pages
-3. **Ask the user** for the container GUID if you cannot discover it
+**Discovery strategy:**
+
+1. **Try `list_content_children`** with candidate GUIDs — a valid container returns `{ "items": [], ... }` (even if empty), while an invalid one returns 404. This is the best way to verify a GUID is a valid container.
+2. **The root GUID can be found** in the CMS editor UI under **Settings > All Properties editing view** on the Root node.
+3. **If you know a page's GUID**, list its children: `list_content_children(key="<guid>")`
+4. **If you have a GUID from a previous creation**, use that as the `container` for child pages
+5. **Ask the user** for the container GUID if you cannot discover it
+
+> **Note:** Creating content requires either a `container` (parent GUID) or an `owner`. Omitting both returns a 400 error: *"Either 'Container' or 'Owner' need to be specified when creating content."* The `container` value must be a valid GUID — string values like `"root"` are rejected.
 
 ### Getting content
 ```
@@ -432,4 +467,6 @@ import_package(body={ ... package data ... })
 | 403 Forbidden | Insufficient permissions | The OAuth2 app needs content management scopes. Ask the user to update permissions in Optimizely. |
 | 404 Not Found | Invalid GUID or content doesn't exist | Verify the GUID. Use `list_content_children` to find valid keys. |
 | 400 Bad Request | Malformed body or invalid property names | Check `get_content_type` for correct property names and types. |
+| 400 Bad Request (Container) | `"Either 'Container' or 'Owner' need to be specified"` | Provide a valid `container` GUID. Use `list_content_children` to verify a GUID is a valid container (returns 200) vs invalid (returns 404). |
+| 400 Bad Request (Invalid key) | `"The provided content key 'X' is invalid"` | The `container` must be a GUID format, not a string like `"root"`. |
 | 409 Conflict | Content with same route segment exists | Use a different `routeSegment` value. |
